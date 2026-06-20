@@ -1,0 +1,77 @@
+name: Bug Report
+description: Report a reproducible Solid Email bug
+labels: ["Type: Bug"]
+body:
+  - type: input
+    attributes:
+      label: Package versions
+      description: Include every relevant Solid Email package version.
+      placeholder: "solid-email@x.y.z, @solid-email/render@x.y.z, solid-js@x.y.z"
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: What is affected?
+      multiple: true
+      options:
+        - CLI
+        - Html Component
+        - Head Component
+        - Font Component
+        - Preview Component
+        - Body Component
+        - Container Component
+        - Section Component
+        - Row Component
+        - Column Component
+        - Heading Component
+        - Text Component
+        - Hr Component
+        - Img Component
+        - Link Component
+        - Button Component
+        - CodeInline Component
+        - CodeBlock Component
+        - Markdown Component
+        - Tailwind Component
+        - Render Package
+        - Vite Integration
+        - TanStack Start Integration
+        - Documentation
+  - type: textarea
+    attributes:
+      label: Describe the bug
+      description: What happened, and what did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Minimal reproduction
+      description: Link to a small repository or paste the smallest complete template that reproduces the bug.
+      placeholder: "https://github.com/owner/reproduction"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: List exact commands and actions.
+      placeholder: |
+        1. pnpm install
+        2. pnpm test
+        3. Open ...
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: Describe the correct behavior.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Node.js version
+      placeholder: "node --version"
+  - type: input
+    attributes:
+      label: Package manager version
+      placeholder: "pnpm --version"

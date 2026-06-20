@@ -1,0 +1,32 @@
+name: Feature Request
+description: Suggest an improvement for Solid Email
+labels: ["Type: Feature"]
+body:
+  - type: textarea
+    attributes:
+      label: Problem
+      description: What are you trying to build, and what is difficult today?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Proposed solution
+      description: Describe the API, behavior, or documentation change you want.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Alternatives considered
+      description: What workarounds or other designs did you consider?
+  - type: dropdown
+    attributes:
+      label: Area
+      options:
+        - Components
+        - Render Package
+        - Tailwind
+        - Markdown
+        - CLI
+        - Documentation
+        - Tooling
+        - Other

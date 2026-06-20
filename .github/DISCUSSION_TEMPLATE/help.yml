@@ -1,0 +1,17 @@
+title: ""
+labels: ["Type: Help"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ask questions about Solid Email usage, templates, rendering, or integrations.
+  - type: textarea
+    attributes:
+      label: Question
+      description: What are you trying to build?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Context
+      description: Include relevant package versions, template code, or rendered output.

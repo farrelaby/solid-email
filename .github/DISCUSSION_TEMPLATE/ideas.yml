@@ -1,0 +1,17 @@
+title: ""
+labels: ["Type: Idea"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share larger ideas before they become implementation work.
+  - type: textarea
+    attributes:
+      label: Idea
+      description: What should Solid Email support or improve?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Use case
+      description: Who needs this, and what does it unlock?
