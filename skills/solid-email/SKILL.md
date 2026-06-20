@@ -1,6 +1,6 @@
 ---
 name: solid-email
-description: Use when building, reviewing, testing, or documenting HTML email templates with Solid Email. Covers SolidJS email components, server rendering to HTML or plain text, Tailwind inlining, markdown, code highlighting, CLI usage, Vite/TanStack integration, and email-client-safe styling.
+description: Use when building, reviewing, testing, or documenting HTML email templates with Solid Email. Covers SolidJS email components, server rendering to HTML or plain text, Tailwind inlining, markdown, code highlighting, Vite/TanStack integration, and email-client-safe styling.
 license: MIT
 metadata:
   author: Solid Email contributors
@@ -157,22 +157,6 @@ await emailProvider.send({
 
 See [references/SENDING.md](references/SENDING.md) for provider examples.
 
-## CLI
-
-The `@akin01/solid-email` package exposes the `email` binary.
-
-Typical scripts:
-
-```json
-{
-  "scripts": {
-    "email:dev": "email dev --dir emails --port 3000",
-    "email:export": "email export --dir emails --out-dir out"
-  }
-}
-```
-
-Keep the emails directory relative to the project root.
 
 ## Before writing an email template
 

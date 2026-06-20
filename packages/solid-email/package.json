@@ -3,9 +3,6 @@
   "version": "0.1.0",
   "description": "High-quality Solid components for creating emails",
   "type": "module",
-  "bin": {
-    "email": "./dist/cli/index.mjs"
-  },
   "types": "./dist/index.d.mts",
   "files": [
     "dist/**"
@@ -32,19 +29,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@babel/core": "catalog:",
     "@solid-email/render": "workspace:*",
-    "babel-preset-solid": "catalog:",
-    "chokidar": "catalog:",
-    "commander": "catalog:",
-    "conf": "catalog:",
     "css-tree": "catalog:",
-    "esbuild": "catalog:",
-    "glob": "catalog:",
-    "jiti": "catalog:",
     "marked": "catalog:",
-    "mime-types": "catalog:",
-    "nypm": "catalog:",
     "prismjs": "catalog:",
     "tailwindcss": "catalog:"
   },
@@ -52,15 +39,11 @@
     "solid-js": "^1.9.0"
   },
   "devDependencies": {
-    "@types/babel__core": "catalog:",
     "@types/css-tree": "catalog:",
-    "@types/mime-types": "catalog:",
-    "@types/node": "catalog:",
     "@types/prismjs": "catalog:",
     "solid-js": "catalog:",
     "tsconfig": "workspace:*",
     "tsdown": "catalog:",
-    "tsx": "catalog:",
     "typescript": "catalog:",
     "vite-plugin-solid": "catalog:",
     "vitest": "catalog:"

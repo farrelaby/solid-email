@@ -27,4 +27,4 @@ skills/
 
 ## Usage
 
-Agents can load `skills/solid-email/SKILL.md` when a task involves Solid Email templates, components, rendering, CLI workflows, or email delivery integration.
+Agents can load `skills/solid-email/SKILL.md` when a task involves Solid Email templates, components, rendering, or email delivery integration.

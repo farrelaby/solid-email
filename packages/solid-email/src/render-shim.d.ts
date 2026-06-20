@@ -11,6 +11,12 @@ declare module '@solid-email/render' {
     | { plainText?: true; htmlToTextOptions?: HtmlToTextOptions }
   );
 
+  export type RenderSyncOptions = {
+    pretty?: false;
+  } & (
+    | { plainText?: false }
+    | { plainText?: true; htmlToTextOptions?: HtmlToTextOptions }
+  );
   export const plainTextSelectors: SelectorDefinition[];
   export function toPlainText(
     html: string,
@@ -21,4 +27,8 @@ declare module '@solid-email/render' {
     options?: PrettierOptions,
   ): Promise<string>;
   export function render(node: Renderable, options?: Options): Promise<string>;
+  export function renderSync(
+    node: Renderable,
+    options?: RenderSyncOptions,
+  ): string;
 }
