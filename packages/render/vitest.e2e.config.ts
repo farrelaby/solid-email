@@ -1,0 +1,11 @@
+import solid from 'vite-plugin-solid';
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  plugins: [solid({ ssr: true, solid: { hydratable: false } })],
+  test: {
+    globals: true,
+    hookTimeout: 60_000,
+    testTimeout: 60_000,
+  },
+});

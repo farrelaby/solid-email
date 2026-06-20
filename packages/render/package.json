@@ -1,0 +1,122 @@
+{
+  "name": "@solid-email/render",
+  "version": "0.1.0",
+  "description": "Transform Solid components into HTML email templates",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/node/index.cjs",
+  "module": "./dist/node/index.mjs",
+  "types": "./dist/node/index.d.cts",
+  "files": [
+    "dist/**"
+  ],
+  "exports": {
+    ".": {
+      "workerd": {
+        "import": {
+          "types": "./dist/edge/index.d.mts",
+          "default": "./dist/edge/index.mjs"
+        },
+        "require": {
+          "types": "./dist/edge/index.d.cts",
+          "default": "./dist/edge/index.cjs"
+        }
+      },
+      "deno": {
+        "import": {
+          "types": "./dist/browser/index.d.mts",
+          "default": "./dist/browser/index.mjs"
+        },
+        "require": {
+          "types": "./dist/browser/index.d.cts",
+          "default": "./dist/browser/index.cjs"
+        }
+      },
+      "worker": {
+        "import": {
+          "types": "./dist/browser/index.d.mts",
+          "default": "./dist/browser/index.mjs"
+        },
+        "require": {
+          "types": "./dist/browser/index.d.cts",
+          "default": "./dist/browser/index.cjs"
+        }
+      },
+      "edge-light": {
+        "import": {
+          "types": "./dist/edge/index.d.mts",
+          "default": "./dist/edge/index.mjs"
+        },
+        "require": {
+          "types": "./dist/edge/index.d.cts",
+          "default": "./dist/edge/index.cjs"
+        }
+      },
+      "convex": {
+        "import": {
+          "types": "./dist/edge/index.d.mts",
+          "default": "./dist/edge/index.mjs"
+        },
+        "require": {
+          "types": "./dist/edge/index.d.cts",
+          "default": "./dist/edge/index.cjs"
+        }
+      },
+      "browser": {
+        "import": {
+          "types": "./dist/browser/index.d.mts",
+          "default": "./dist/browser/index.mjs"
+        },
+        "require": {
+          "types": "./dist/browser/index.d.cts",
+          "default": "./dist/browser/index.cjs"
+        }
+      },
+      "node": {
+        "import": {
+          "types": "./dist/node/index.d.mts",
+          "default": "./dist/node/index.mjs"
+        },
+        "require": {
+          "types": "./dist/node/index.d.cts",
+          "default": "./dist/node/index.cjs"
+        }
+      },
+      "default": {
+        "import": {
+          "types": "./dist/node/index.d.mts",
+          "default": "./dist/node/index.mjs"
+        },
+        "require": {
+          "types": "./dist/node/index.d.cts",
+          "default": "./dist/node/index.cjs"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "build:watch": "tsdown --watch",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:e2e": "vitest run --config vitest.e2e.config.ts",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "html-to-text": "catalog:",
+    "prettier": "catalog:"
+  },
+  "peerDependencies": {
+    "solid-js": "catalog:"
+  },
+  "devDependencies": {
+    "@types/html-to-text": "catalog:",
+    "solid-js": "catalog:",
+    "tsconfig": "workspace:*",
+    "tsdown": "catalog:",
+    "vite-plugin-solid": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}
