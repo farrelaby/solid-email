@@ -1,0 +1,13 @@
+{
+  "name": "tsconfig",
+  "version": "0.1.0",
+  "private": true,
+  "files": [
+    "base.json",
+    "solid-library.json"
+  ],
+  "exports": {
+    "./base.json": "./base.json",
+    "./solid-library.json": "./solid-library.json"
+  }
+}

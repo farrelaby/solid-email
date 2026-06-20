@@ -1,0 +1,29 @@
+node_modules/
+dist/
+.turbo/
+.cache/
+coverage/
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+
+# Local agent/tooling caches
+.agents/
+
+# Local preview prototype is not part of the initial package set
+packages/preview/
+
+# E2E generated output
+e2e/.tmp/
+e2e/**/node_modules/
+e2e/**/dist/
+e2e/**/.types/
+e2e/**/.render/
+e2e/**/.output/
+e2e/**/.tanstack/
+e2e/**/src/routeTree.gen.ts
+
+# Package build output
+packages/*/dist/
