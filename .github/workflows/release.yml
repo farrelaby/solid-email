@@ -1,10 +1,9 @@
-name: Release
+name: Publish Package
 
 on:
   release:
     types:
       - published
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -37,6 +36,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Resolve package release
+        id: package
+        run: node scripts/resolve-release-package.mjs --tag "${{ github.event.release.tag_name }}"
+
       - name: Run typecheck
         run: pnpm typecheck
 
@@ -49,12 +52,7 @@ jobs:
       - name: Run build
         run: pnpm build
 
-      - name: Publish @solid-email/render
-        run: pnpm --dir packages/render publish --access public --provenance --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Publish @akin01/solid-email
-        run: pnpm --dir packages/solid-email publish --access public --provenance --no-git-checks
+      - name: Publish ${{ steps.package.outputs.name }}
+        run: pnpm --dir "${{ steps.package.outputs.directory }}" publish --access public --provenance --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

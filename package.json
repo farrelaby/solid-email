@@ -11,7 +11,9 @@
     "typecheck": "pnpm --filter @solid-email/render --filter @akin01/solid-email run typecheck && pnpm typecheck:e2e",
     "typecheck:e2e": "tsc -p e2e/tsconfig.json --noEmit && tsc -p e2e/vite/tsconfig.json --noEmit",
     "lint": "biome check .",
-    "lint:fix": "biome check --write ."
+    "lint:fix": "biome check --write .",
+    "release:github": "node scripts/create-github-releases.mjs",
+    "release:github:dry-run": "node scripts/create-github-releases.mjs --dry-run"
   },
   "devDependencies": {
     "@solid-email/render": "workspace:*",

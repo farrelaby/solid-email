@@ -1,14 +1,14 @@
-name: Create GitHub Release
+name: Create GitHub Releases
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: Version to release. Defaults to package.json version.
+        description: Version to release. Defaults to each package version.
         required: false
         type: string
       prerelease:
-        description: Mark the release as a prerelease.
+        description: Mark releases as prereleases.
         required: false
         default: false
         type: boolean
@@ -21,7 +21,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  create-release:
+  create-releases:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -30,53 +30,17 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Resolve release metadata
-        id: metadata
+      - name: Create package releases
         env:
+          GH_TOKEN: ${{ github.token }}
           INPUT_VERSION: ${{ inputs.version }}
-        run: |
-          VERSION="$INPUT_VERSION"
-          if [ -z "$VERSION" ]; then
-            VERSION="$(node -p "require('./package.json').version")"
-          fi
-          TAG="v$VERSION"
-          node - "$VERSION" <<'NODE'
-          const { readFileSync, writeFileSync } = require('node:fs');
-
-          const version = process.argv[2];
-          const changelog = readFileSync('CHANGELOG.md', 'utf8');
-          const lines = changelog.split(/\r?\n/);
-          const start = lines.findIndex((line) => line.startsWith(`## ${version}`));
-          const end =
-            start < 0
-              ? -1
-              : lines.findIndex((line, index) => index > start && line.startsWith('## '));
-          const section = start < 0 ? [] : lines.slice(start + 1, end < 0 ? undefined : end);
-          const body = section.join('\n').trim() || `Release ${version}`;
-
-          writeFileSync('release-notes.md', `${body}\n`);
-          NODE
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-
-      - name: Ensure release does not exist
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ steps.metadata.outputs.tag }}
-        run: |
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "Release $TAG already exists" >&2
-            exit 1
-          fi
-
-      - name: Create GitHub release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ steps.metadata.outputs.tag }}
           PRERELEASE: ${{ inputs.prerelease }}
         run: |
-          ARGS=("$TAG" --title "$TAG" --notes-file release-notes.md --target "$GITHUB_SHA")
+          ARGS=()
+          if [ -n "$INPUT_VERSION" ]; then
+            ARGS+=(--version "$INPUT_VERSION")
+          fi
           if [ "$PRERELEASE" = "true" ]; then
             ARGS+=(--prerelease)
           fi
-          gh release create "${ARGS[@]}"
+          node scripts/create-github-releases.mjs "${ARGS[@]}"

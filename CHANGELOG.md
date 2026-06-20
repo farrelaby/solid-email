@@ -16,8 +16,8 @@ All notable changes to this project will be documented in this file.
 - Added Prism-based code block and inline code components.
 - Added CLI entrypoint through the `email` binary.
 - Added Solid Vite SSR and TanStack Start Solid integration fixtures.
-- Added GitHub issue templates, discussion templates, pull request template, CI workflows, and release workflow.
-- Added MIT license, README, implementation docs, and Solid Email agent skill documentation.
+- Added GitHub issue templates, discussion templates, pull request template, CI workflows, and per-package release scripts.
+- Added MIT license, README, and Solid Email agent skill documentation.
 
 ### Changed
 
