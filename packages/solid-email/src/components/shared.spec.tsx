@@ -32,6 +32,18 @@ describe('Solid style and class props', () => {
     expect(html).not.toContain('className');
   });
 
+  it('does not serialize children as native attributes', async () => {
+    const html = await render(() => (
+      <Text data-testid="copy">
+        <span>Hello</span>
+      </Text>
+    ));
+
+    expect(html).toContain('data-testid="copy"');
+    expect(html).toContain('<span>Hello</span>');
+    expect(html).not.toContain('children=');
+  });
+
   it('accepts alternate class prop names and emits native class output', async () => {
     const html = await render(() => (
       <Text className="copy" style={{ backgroundColor: '#fff' }}>
