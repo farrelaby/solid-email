@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.1 - 2026-06-21
+
+### Changed
+
+- Improved Solid email render performance by avoiding accidental `children` prop serialization and reducing repeated prop/style work in common components.
+- Improved Tailwind render performance with cached render plans, faster class scanning, and lower-allocation inline style serialization.
+
+### Added
+
+- Added rendering benchmarks for Solid Tailwind and React Email Tailwind templates.
+- Added regression coverage for filtering Solid children out of native attribute props.
+
+### Verified
+
+- `pnpm --filter @benchmarks/rendering run typecheck`
+- `pnpm --filter @akin01/solid-email run test`
+- `pnpm lint`
+- `pnpm typecheck`
+- `pnpm benchmark:rendering`
+- `pnpm benchmark:tailwind`
+
 ## 0.1.0 - 2026-06-20
 
 ### Added
