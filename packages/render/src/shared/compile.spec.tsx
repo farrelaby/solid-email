@@ -1,3 +1,4 @@
+import type { JSX } from 'solid-js';
 import { describe, expect, it, vi } from 'vitest';
 import { compile, compileSync } from './compile';
 import { Slot, slot } from './slots';
@@ -22,6 +23,22 @@ describe('compile', () => {
     expect(html).not.toContain('__SM_ATR_');
   });
 
+  it('replaces slots with encodeURIComponent-safe punctuation in names', async () => {
+    const email = await compile(
+      <p>
+        <Slot name="cta!" /> <a href={slot('url*')}>Go</a>
+      </p>,
+    );
+    const html = await email.render({
+      'cta!': 'Launch',
+      'url*': 'https://example.com',
+    });
+    expect(html).toContain(
+      '<p>Launch <a href="https://example.com">Go</a></p>',
+    );
+    expect(html).not.toContain('__SM_');
+  });
+
   it('preserves default content when slot data is omitted', async () => {
     const email = await compile(
       <p>
@@ -33,6 +50,19 @@ describe('compile', () => {
     expect(html).toContain('Hello World');
     expect(html).not.toContain('__SM_CNT_');
     expect(html).not.toContain('__SM_CNE_');
+  });
+
+  it('processes nested content slots inside fallback content', async () => {
+    const email = await compile(
+      <p>
+        <Slot name="outer">
+          Hello <Slot name="inner" />
+        </Slot>
+      </p>,
+    );
+    const html = await email.render({ inner: 'nested' });
+    expect(html).toContain('Hello nested');
+    expect(html).not.toContain('__SM_');
   });
 
   it('replaces content slot with empty string when no default and no data', async () => {
@@ -58,6 +88,18 @@ describe('compile', () => {
     expect(html).not.toContain('<script>');
   });
 
+  it('renders JSX content slot values', async () => {
+    const email = await compile(
+      <p>
+        <Slot name="body" />
+      </p>,
+    );
+    const html = await email.render({
+      body: <span class="highlight">Dynamic</span>,
+    });
+    expect(html).toContain('<span class="highlight">Dynamic</span>');
+  });
+
   it('handles multiple slots of the same name', async () => {
     const email = await compile(
       <p>
@@ -78,6 +120,39 @@ describe('compile', () => {
     const html = await email.render({ url: '/path' });
     expect(html).toContain('href="/path"');
     expect(html).toContain('link');
+  });
+
+  it('renders content and attribute slots passed through component props', async () => {
+    function ActionLink(props: {
+      href: string;
+      children: JSX.Element;
+    }): JSX.Element {
+      return <a href={props.href}>{props.children}</a>;
+    }
+
+    function WelcomeEmail(props: {
+      name: JSX.Element;
+      actionUrl: string;
+    }): JSX.Element {
+      return (
+        <p>
+          Hello {props.name}!{' '}
+          <ActionLink href={props.actionUrl}>Open dashboard</ActionLink>
+        </p>
+      );
+    }
+
+    const email = await compile(
+      <WelcomeEmail name={<Slot name="name" />} actionUrl={slot('url')} />,
+    );
+    const html = await email.render({
+      name: 'Alice',
+      url: 'https://example.com/dashboard',
+    });
+
+    expect(html).toContain('Hello Alice!');
+    expect(html).toContain('href="https://example.com/dashboard"');
+    expect(html).not.toContain('__SM_');
   });
 
   it('ignores extra keys in data', async () => {
@@ -266,6 +341,18 @@ describe('compileSync', () => {
     const text = email.renderSync({ msg: 'Hello' }, { plainText: true });
     expect(text).toBe('Hello');
   });
+
+  it('renders JSX content slot values synchronously', () => {
+    const email = compileSync(
+      <p>
+        <Slot name="body" />
+      </p>,
+    );
+    const html = email.renderSync({
+      body: <span class="highlight">Dynamic sync</span>,
+    });
+    expect(html).toContain('<span class="highlight">Dynamic sync</span>');
+  });
 });
 
 describe('slot utilities', () => {
@@ -318,5 +405,19 @@ describe('runtime guards', () => {
     await email.render({ name: 'Alice' });
     expect(warn).not.toHaveBeenCalled();
     warn.mockRestore();
+  });
+
+  it('throws when an attribute slot receives JSX', async () => {
+    const email = await compile(<a href={slot('url')}>Click</a>);
+    await expect(email.render({ url: <span>bad</span> })).rejects.toThrow(
+      'Attribute slot "url" only accepts string, number, boolean, null, or undefined',
+    );
+  });
+
+  it('throws when an attribute slot receives an array', () => {
+    const email = compileSync(<a href={slot('url')}>Click</a>);
+    expect(() => email.renderSync({ url: ['bad'] })).toThrow(
+      'Attribute slot "url" only accepts string, number, boolean, null, or undefined',
+    );
   });
 });

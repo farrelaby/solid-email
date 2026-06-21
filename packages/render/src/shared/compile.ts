@@ -1,3 +1,4 @@
+import type { JSX } from 'solid-js';
 import {
   renderToString,
   renderToStringAsync,
@@ -99,38 +100,37 @@ export class CompiledTemplate<
           );
         }
       }
-
-      if (this.attrSlots.has(name) && value != null) {
-        const t = typeof value;
-        if (
-          Array.isArray(value) ||
-          (t !== 'string' && t !== 'number' && t !== 'boolean')
-        ) {
-          console.warn(
-            `[solid-email] Attribute slot "${name}" received ${Array.isArray(value) ? 'an array' : `type "${t}"`}. Attribute slots only support string, number, or boolean. The value will be ignored.`,
-          );
-        }
-      }
     }
   }
 
   private async replaceSlots(result: string, data: TSlots): Promise<string> {
-    this.validateSlots(data);
+    return this.replaceSlotsInFragment(result, data, true);
+  }
+
+  private async replaceSlotsInFragment(
+    result: string,
+    data: TSlots,
+    validate: boolean,
+  ): Promise<string> {
+    if (validate) this.validateSlots(data);
     const replacements = new Map<string, string>();
 
     for (const [name, occurrences] of this.contentSlots) {
       const value = data[name as keyof TSlots] as SlotValue | undefined;
       const rendered =
-        value !== undefined ? await renderSlotValueAsync(value) : '';
-      const useDefault = value === undefined;
+        value !== undefined ? await renderSlotValueAsync(value) : undefined;
       for (const occ of occurrences) {
-        replacements.set(occ.full, useDefault ? occ.defaultValue : rendered);
+        if (!result.includes(occ.full)) continue;
+        const replacement =
+          rendered ??
+          (await this.replaceSlotsInFragment(occ.defaultValue, data, false));
+        replacements.set(occ.full, replacement);
       }
     }
 
     for (const [name, markers] of this.attrSlots) {
       const value = data[name as keyof TSlots] as SlotValue | undefined;
-      const replacement = renderAttrValue(value);
+      const replacement = renderAttrValue(name, value);
       for (const marker of markers) {
         replacements.set(marker, replacement);
       }
@@ -145,21 +145,33 @@ export class CompiledTemplate<
   }
 
   private replaceSlotsSync(result: string, data: TSlots): string {
-    this.validateSlots(data);
+    return this.replaceSlotsInFragmentSync(result, data, true);
+  }
+
+  private replaceSlotsInFragmentSync(
+    result: string,
+    data: TSlots,
+    validate: boolean,
+  ): string {
+    if (validate) this.validateSlots(data);
     const replacements = new Map<string, string>();
 
     for (const [name, occurrences] of this.contentSlots) {
       const value = data[name as keyof TSlots] as SlotValue | undefined;
-      const rendered = value !== undefined ? renderSlotValueSync(value) : '';
-      const useDefault = value === undefined;
+      const rendered =
+        value !== undefined ? renderSlotValueSync(value) : undefined;
       for (const occ of occurrences) {
-        replacements.set(occ.full, useDefault ? occ.defaultValue : rendered);
+        if (!result.includes(occ.full)) continue;
+        const replacement =
+          rendered ??
+          this.replaceSlotsInFragmentSync(occ.defaultValue, data, false);
+        replacements.set(occ.full, replacement);
       }
     }
 
     for (const [name, markers] of this.attrSlots) {
       const value = data[name as keyof TSlots] as SlotValue | undefined;
-      const replacement = renderAttrValue(value);
+      const replacement = renderAttrValue(name, value);
       for (const marker of markers) {
         replacements.set(marker, replacement);
       }
@@ -183,7 +195,9 @@ async function renderSlotValueAsync(value: SlotValue): Promise<string> {
   if (typeof value === 'boolean') return value ? 'true' : '';
   if (typeof value === 'string') return escapeHtml(value);
   if (typeof value === 'number') return String(value);
-  return '';
+  return removeSolidResourceScripts(
+    await renderToStringAsync(() => value as JSX.Element),
+  );
 }
 
 function renderSlotValueSync(value: SlotValue): string {
@@ -192,15 +206,17 @@ function renderSlotValueSync(value: SlotValue): string {
   if (typeof value === 'boolean') return value ? 'true' : '';
   if (typeof value === 'string') return escapeHtml(value);
   if (typeof value === 'number') return String(value);
-  return '';
+  return removeSolidResourceScripts(renderToString(() => value as JSX.Element));
 }
 
-function renderAttrValue(value: unknown): string {
+function renderAttrValue(name: string, value: unknown): string {
   if (value == null) return '';
   if (typeof value === 'boolean') return value ? 'true' : '';
   if (typeof value === 'string') return escapeAttr(value);
   if (typeof value === 'number') return String(value);
-  return '';
+  throw new TypeError(
+    `Attribute slot "${name}" only accepts string, number, boolean, null, or undefined. Use <Slot name="${name}" /> for JSX/content values.`,
+  );
 }
 
 function escapeHtml(str: string): string {

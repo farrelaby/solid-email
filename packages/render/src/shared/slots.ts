@@ -7,11 +7,14 @@ const CONTENT_END = `${MARKER_PREFIX}CNE_`;
 const ATTR_PREFIX = `${MARKER_PREFIX}ATR_`;
 
 export type SlotPrimitive = string | number | boolean | null | undefined;
-export type SlotValue = SlotPrimitive | SlotValue[];
+export type SlotValue = SlotPrimitive | JSX.Element | SlotValue[];
 export type SlotRecord = Record<string, SlotValue>;
 
 function encodeName(name: string): string {
-  return encodeURIComponent(name);
+  return encodeURIComponent(name).replace(
+    /[!'()*_]/g,
+    (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`,
+  );
 }
 
 export function decodeName(encoded: string): string {
@@ -48,33 +51,60 @@ export function buildSlotLookup(html: string): {
   const contentSlots = new Map<string, SlotOccurrence[]>();
   const attrSlots = new Map<string, string[]>();
 
-  const nameChars = '[A-Za-z0-9._~%-]+(?:%[0-9A-Fa-f]{2})*';
+  const nameChars = '(?:[A-Za-z0-9.~-]|%[0-9A-Fa-f]{2})+';
 
-  const contentRegex = new RegExp(
-    `${escapeRegex(CONTENT_START)}(${nameChars})__([\\s\\S]*?)${escapeRegex(CONTENT_END)}\\1__`,
+  const tokenRegex = new RegExp(
+    `${escapeRegex(CONTENT_START)}(${nameChars})__|${escapeRegex(CONTENT_END)}(${nameChars})__`,
     'g',
   );
+  const stack: Array<{
+    encodedName: string;
+    name: string;
+    startIndex: number;
+    contentStartIndex: number;
+  }> = [];
   let match: RegExpExecArray | null;
   while (true) {
-    match = contentRegex.exec(html);
+    match = tokenRegex.exec(html);
     if (match === null) break;
-    const name = decodeName(match[1] ?? '');
-    const innerContent = match[2] ?? '';
-    const existing = contentSlots.get(name);
-    if (existing) {
-      existing.push({
-        full: match[0],
-        hasDefault: innerContent.length > 0,
-        defaultValue: innerContent,
+
+    const startName = match[1];
+    if (startName !== undefined) {
+      stack.push({
+        encodedName: startName,
+        name: decodeName(startName),
+        startIndex: match.index,
+        contentStartIndex: tokenRegex.lastIndex,
       });
+      continue;
+    }
+
+    const endName = match[2];
+    if (endName === undefined) continue;
+
+    let openIndex = -1;
+    for (let index = stack.length - 1; index >= 0; index -= 1) {
+      if (stack[index]?.encodedName === endName) {
+        openIndex = index;
+        break;
+      }
+    }
+    if (openIndex === -1) continue;
+
+    const [open] = stack.splice(openIndex, 1);
+    if (open === undefined) continue;
+
+    const innerContent = html.slice(open.contentStartIndex, match.index);
+    const occurrence = {
+      full: html.slice(open.startIndex, tokenRegex.lastIndex),
+      hasDefault: innerContent.length > 0,
+      defaultValue: innerContent,
+    };
+    const existing = contentSlots.get(open.name);
+    if (existing) {
+      existing.push(occurrence);
     } else {
-      contentSlots.set(name, [
-        {
-          full: match[0],
-          hasDefault: innerContent.length > 0,
-          defaultValue: innerContent,
-        },
-      ]);
+      contentSlots.set(open.name, [occurrence]);
     }
   }
 
