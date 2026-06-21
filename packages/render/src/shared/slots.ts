@@ -7,7 +7,7 @@ const CONTENT_END = `${MARKER_PREFIX}CNE_`;
 const ATTR_PREFIX = `${MARKER_PREFIX}ATR_`;
 
 export type SlotPrimitive = string | number | boolean | null | undefined;
-export type SlotValue = SlotPrimitive | JSX.Element | SlotValue[];
+export type SlotValue = SlotPrimitive | SlotValue[];
 export type SlotRecord = Record<string, SlotValue>;
 
 function encodeName(name: string): string {
@@ -48,7 +48,7 @@ export function buildSlotLookup(html: string): {
   const contentSlots = new Map<string, SlotOccurrence[]>();
   const attrSlots = new Map<string, string[]>();
 
-  const nameChars = '[A-Za-z0-9._~%-]+';
+  const nameChars = '[A-Za-z0-9._~%-]+(?:%[0-9A-Fa-f]{2})*';
 
   const contentRegex = new RegExp(
     `${escapeRegex(CONTENT_START)}(${nameChars})__([\\s\\S]*?)${escapeRegex(CONTENT_END)}\\1__`,
