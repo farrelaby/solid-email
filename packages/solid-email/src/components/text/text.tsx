@@ -12,11 +12,9 @@ export type TextProps = Readonly<IntrinsicProps<'p'>>;
 
 export function Text(props: TextProps) {
   const style = styleObject(props.style);
-  const defaultMargins: SolidStyle = {};
-  if (style['margin-top'] === undefined) defaultMargins['margin-top'] = '16px';
-  if (style['margin-bottom'] === undefined)
-    defaultMargins['margin-bottom'] = '16px';
-  const margins = computeMargins({ ...defaultMargins, ...style });
+  const margins = computeMargins(style);
+  if (margins['margin-top'] === undefined) margins['margin-top'] = '16px';
+  if (margins['margin-bottom'] === undefined) margins['margin-bottom'] = '16px';
   const textStyle: SolidStyle = {
     'font-size': '14px',
     'line-height': '24px',
