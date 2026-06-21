@@ -6,8 +6,15 @@ on:
       - published
   workflow_dispatch:
     inputs:
-      tag:
-        description: Package release tag to publish.
+      package:
+        description: Package to publish.
+        required: true
+        type: choice
+        options:
+          - "@solid-email/render"
+          - "@akin01/solid-email"
+      version:
+        description: Package version to publish, for example 0.1.0.
         required: true
         type: string
 permissions:
@@ -43,7 +50,12 @@ jobs:
 
       - name: Resolve package release
         id: package
-        run: node scripts/resolve-release-package.mjs --tag "${{ github.event.release.tag_name || inputs.tag }}"
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            node scripts/resolve-release-package.mjs --package "${{ inputs.package }}" --version "${{ inputs.version }}"
+          else
+            node scripts/resolve-release-package.mjs --tag "${{ github.event.release.tag_name }}"
+          fi
 
       - name: Run typecheck
         run: pnpm typecheck

@@ -133,7 +133,9 @@ try {
           '--ref',
           ref,
           '-f',
-          `tag=${release.tag}`,
+          `package=${release.name}`,
+          '-f',
+          `version=${release.version}`,
         ]),
         `Dispatching publish workflow for ${release.tag}`,
       );
