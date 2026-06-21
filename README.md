@@ -27,6 +27,27 @@ Inspired by [React Email](https://react.email), designed for SolidJS.
 Email HTML is still full of client-specific behavior, table layouts, inline styles, and rendering quirks.
 Solid Email keeps the authoring experience close to a modern Solid app while producing HTML that can be sent by any email provider.
 
+## Benchmarks
+
+Measured with `pnpm benchmark:rendering` on the repository marketing email fixture. Lower mean time is better.
+
+| Renderer | Template | Mean | Throughput | Comparison |
+| --- | --- | ---: | ---: | --- |
+| Solid Email `render()` | Static JSX | 2.3973ms | 417.13 hz | 5.30x faster than React Email `render()` |
+| Solid Email `renderSync()` | Static JSX | 2.9353ms | 340.68 hz | 4.33x faster than React Email `render()` |
+| Solid Email `render()` | Tailwind JSX | 6.1340ms | 163.03 hz | 4.29x faster than React Email Tailwind |
+| React Email `render()` | Static JSX | 12.7043ms | 78.71 hz | Baseline |
+| React Email `render()` | Tailwind JSX | 26.3239ms | 37.99 hz | Tailwind baseline |
+
+Bundle size compares built ESM entry files after `pnpm build`; gzip uses Node's `zlib.gzipSync`.
+
+| Package entry | Raw size | Gzip size | Comparison |
+| --- | ---: | ---: | --- |
+| `@akin01/solid-email/dist/index.mjs` | 198.5 KiB | 42.2 KiB | Components entry |
+| `@solid-email/render/dist/node/index.mjs` | 4.5 KiB | 1.7 KiB | Renderer entry |
+| Solid Email combined entries | 203.0 KiB | 43.7 KiB | 7.1x smaller raw / 8.0x smaller gzip than React Email |
+| `react-email/dist/index.mjs` | 1,448.0 KiB | 347.4 KiB | React Email baseline |
+
 ## Install
 
 ```sh

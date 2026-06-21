@@ -16,12 +16,13 @@ export function Container(props: ContainerProps) {
     ...tableStyle,
   });
   const tdHtmlStyle = normalizeStyle(tdStyle);
+  const classValue = cls(props);
   return (
     <table
       attr:align="center"
       attr:width="100%"
       {...withoutClass(props)}
-      {...(cls(props) ? { class: cls(props) } : {})}
+      {...(classValue ? { class: classValue } : {})}
       attr:border={0}
       attr:cellpadding="0"
       attr:cellspacing="0"

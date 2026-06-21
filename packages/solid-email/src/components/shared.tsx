@@ -39,15 +39,24 @@ export function cls(props: Record<string, unknown>): string | undefined {
   return classValue.length > 0 ? classValue : undefined;
 }
 
-// Remove presentation-only props before spreading the remaining attributes.
+// Remove presentation-only props and children before spreading attributes onto
+// native elements. Reading children while cloning Solid props can eagerly resolve
+// nested JSX during SSR.
 export function withoutClass<T extends Record<string, unknown>>(
   props: T,
-): Omit<T, 'class' | 'className' | 'style'> {
-  const copy = { ...props };
-  delete copy.class;
-  delete (copy as Record<string, unknown>).className;
-  delete (copy as Record<string, unknown>).style;
-  return copy as Omit<T, 'class' | 'className' | 'style'>;
+): Omit<T, 'class' | 'className' | 'style' | 'children'> {
+  const copy: Record<string, unknown> = {};
+  for (const key in props) {
+    if (
+      key !== 'class' &&
+      key !== 'className' &&
+      key !== 'style' &&
+      key !== 'children'
+    ) {
+      copy[key] = props[key];
+    }
+  }
+  return copy as Omit<T, 'class' | 'className' | 'style' | 'children'>;
 }
 
 // CSS properties that accept unitless numeric values. Other non-zero numbers
@@ -108,9 +117,18 @@ export function normalizeCssValue(
 
 // Convert camelCase style keys to CSS property names while preserving custom
 // properties such as --brand-color.
+const normalizedCssProperties = new Map<string, string>();
+
 export function normalizeCssProperty(property: string): string {
   if (property.startsWith('--')) return property;
-  return property.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+  const cached = normalizedCssProperties.get(property);
+  if (cached) return cached;
+  const normalized = property.replace(
+    /[A-Z]/g,
+    (letter) => `-${letter.toLowerCase()}`,
+  );
+  normalizedCssProperties.set(property, normalized);
+  return normalized;
 }
 
 // Parse a CSS declaration string into the same normalized map used by object

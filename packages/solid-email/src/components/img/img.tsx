@@ -8,10 +8,11 @@ import {
 export type ImgProps = Readonly<IntrinsicProps<'img'>>;
 
 export function Img(props: ImgProps) {
+  const classValue = cls(props);
   return (
     <img
       {...withoutClass(props)}
-      {...(cls(props) ? { class: cls(props) } : {})}
+      {...(classValue ? { class: classValue } : {})}
       alt={props.alt ?? ''}
       style={normalizeStyle({
         display: 'block',

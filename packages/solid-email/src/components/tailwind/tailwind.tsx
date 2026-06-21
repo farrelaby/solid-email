@@ -150,24 +150,120 @@ function setAttribute(tag: string, name: string, value: string): string {
   return `${tag.slice(0, -suffix.length)}${replacement}${suffix}`;
 }
 
+function forEachClassName(
+  value: string,
+  callback: (className: string) => void,
+): void {
+  let start = -1;
+  for (let index = 0; index <= value.length; index += 1) {
+    const code = index < value.length ? value.charCodeAt(index) : 32;
+    const isWhitespace =
+      code === 32 || code === 9 || code === 10 || code === 12 || code === 13;
+    if (isWhitespace) {
+      if (start !== -1) {
+        callback(value.slice(start, index));
+        start = -1;
+      }
+    } else if (start === -1) {
+      start = index;
+    }
+  }
+}
+
 function classList(value: string): string[] {
-  return value.trim().split(/\s+/).filter(Boolean);
+  const classes: string[] = [];
+  forEachClassName(value, (className) => classes.push(className));
+  return classes;
 }
 
 function collectClasses(html: string): string[] {
   const classes = new Set<string>();
-  for (const match of html.matchAll(/\sclass="([^"]*)"/g)) {
-    for (const className of classList(match[1] ?? '')) {
-      classes.add(className);
-    }
+  const classPattern = /\sclass="([^"]*)"/g;
+  let match = classPattern.exec(html);
+  while (match !== null) {
+    forEachClassName(match[1] ?? '', (className) => classes.add(className));
+    match = classPattern.exec(html);
   }
   return Array.from(classes);
 }
 
 function serializeStyles(styles: Record<string, string>): string {
-  return Object.entries(styles)
-    .map(([property, value]) => `${property}:${value}`)
-    .join(';');
+  let serialized = '';
+  for (const property in styles) {
+    const declaration = `${property}:${styles[property]}`;
+    serialized = serialized ? `${serialized};${declaration}` : declaration;
+  }
+  return serialized;
+}
+
+interface InlineClassResult {
+  generatedStyles: string;
+  residualClass: string | undefined;
+}
+
+interface TailwindRenderPlan {
+  inlineResults: Map<string, InlineClassResult>;
+  nonInlineCss: string;
+  nonInlinableClassNames: string[];
+}
+
+const tailwindRenderPlanCache = new Map<string, TailwindRenderPlan>();
+
+function applyInlineClassResult(
+  tag: string,
+  inlineResult: InlineClassResult,
+): string {
+  const existingStyle = getAttribute(tag, 'style');
+  const style = inlineResult.generatedStyles
+    ? existingStyle
+      ? `${inlineResult.generatedStyles};${existingStyle}`
+      : inlineResult.generatedStyles
+    : (existingStyle ?? '');
+  let nextTag = tag;
+
+  if (style.length > 0) nextTag = setAttribute(nextTag, 'style', style);
+  if (inlineResult.residualClass) {
+    nextTag = setAttribute(nextTag, 'class', inlineResult.residualClass);
+  } else {
+    nextTag = removeAttribute(nextTag, 'class');
+  }
+
+  return nextTag;
+}
+
+function renderFromTailwindPlan(
+  html: string,
+  plan: TailwindRenderPlan,
+): string | undefined {
+  let missingClassGroup = false;
+  const result = html.replace(
+    /<([A-Za-z][A-Za-z0-9:-]*)([^<>]*?)>/g,
+    (tag: string) => {
+      const classAttribute = getAttribute(tag, 'class');
+      if (!classAttribute) return tag;
+
+      const inlineResult = plan.inlineResults.get(classAttribute);
+      if (!inlineResult) {
+        missingClassGroup = true;
+        return tag;
+      }
+
+      return applyInlineClassResult(tag, inlineResult);
+    },
+  );
+
+  if (missingClassGroup) return undefined;
+  if (!plan.nonInlineCss) return result;
+  if (!/<head(?:\s|>)/i.test(result)) {
+    throw new Error(
+      `Tailwind: <head> not found inside <Tailwind>.
+Move <Head /> inside <Tailwind>, or remove these classes that require a <head>: ${plan.nonInlinableClassNames.join(
+        ' ',
+      )}.`,
+    );
+  }
+
+  return insertNonInlineStyles(result, plan.nonInlineCss);
 }
 
 function inlineClassStyles(
@@ -175,38 +271,37 @@ function inlineClassStyles(
   inlinableRules: RulesPerClass['inlinable'],
   nonInlinableRules: RulesPerClass['nonInlinable'],
   customProperties: CustomProperties,
+  inlineCache: Map<string, InlineClassResult>,
 ): string {
   return html.replace(/<([A-Za-z][A-Za-z0-9:-]*)([^<>]*?)>/g, (tag: string) => {
     const classAttribute = getAttribute(tag, 'class');
     if (!classAttribute) return tag;
 
-    const residualClasses: string[] = [];
-    const rules: CssNode[] = [];
-    for (const className of classList(classAttribute)) {
-      const rule = inlinableRules.get(className);
-      if (rule) rules.push(rule);
-      if (nonInlinableRules.has(className)) {
-        residualClasses.push(sanitizeClassName(className));
-      } else if (!rule) {
-        residualClasses.push(className);
+    let inlineResult = inlineCache.get(classAttribute);
+    if (!inlineResult) {
+      const residualClasses: string[] = [];
+      const rules: CssNode[] = [];
+      for (const className of classList(classAttribute)) {
+        const rule = inlinableRules.get(className);
+        if (rule) rules.push(rule);
+        if (nonInlinableRules.has(className)) {
+          residualClasses.push(sanitizeClassName(className));
+        } else if (!rule) {
+          residualClasses.push(className);
+        }
       }
+
+      inlineResult = {
+        generatedStyles: serializeStyles(
+          makeInlineStylesFor(rules, customProperties),
+        ),
+        residualClass:
+          residualClasses.length > 0 ? residualClasses.join(' ') : undefined,
+      };
+      inlineCache.set(classAttribute, inlineResult);
     }
 
-    const generatedStyles = serializeStyles(
-      makeInlineStylesFor(rules, customProperties),
-    );
-    const existingStyle = getAttribute(tag, 'style');
-    const style = [generatedStyles, existingStyle].filter(Boolean).join(';');
-    let nextTag = tag;
-
-    if (style.length > 0) nextTag = setAttribute(nextTag, 'style', style);
-    if (residualClasses.length > 0) {
-      nextTag = setAttribute(nextTag, 'class', residualClasses.join(' '));
-    } else {
-      nextTag = removeAttribute(nextTag, 'class');
-    }
-
-    return nextTag;
+    return applyInlineClassResult(tag, inlineResult);
   });
 }
 
@@ -216,11 +311,11 @@ function insertNonInlineStyles(html: string, css: string): string {
 }
 
 function renderTailwindHtml(
-  children: JSX.Element,
+  html: string,
+  classesUsed: string[],
   tailwindSetup: TailwindSetup,
+  renderPlanKey: string,
 ) {
-  const html = toHtml(children);
-  const classesUsed = collectClasses(html);
   tailwindSetup.addUtilities(classesUsed);
 
   const styleSheet = tailwindSetup.getStyleSheet();
@@ -239,25 +334,36 @@ function renderTailwindHtml(
   sanitizeNonInlinableRules(nonInlineStyles);
   downlevelForEmailClients(nonInlineStyles);
 
+  const inlineResults = new Map<string, InlineClassResult>();
   let result = inlineClassStyles(
     html,
     inlinableRules,
     nonInlinableRules,
     customProperties,
+    inlineResults,
   );
 
-  if (nonInlinableRules.size === 0) return result;
+  const nonInlineCss =
+    nonInlinableRules.size > 0 ? generate(nonInlineStyles) : '';
+  const nonInlinableClassNames = Array.from(nonInlinableRules.keys());
+  tailwindRenderPlanCache.set(renderPlanKey, {
+    inlineResults,
+    nonInlineCss,
+    nonInlinableClassNames,
+  });
+
+  if (!nonInlineCss) return result;
 
   if (!/<head(?:\s|>)/i.test(result)) {
     throw new Error(
       `Tailwind: <head> not found inside <Tailwind>.
-Move <Head /> inside <Tailwind>, or remove these classes that require a <head>: ${Array.from(
-        nonInlinableRules.keys(),
-      ).join(' ')}.`,
+Move <Head /> inside <Tailwind>, or remove these classes that require a <head>: ${nonInlinableClassNames.join(
+        ' ',
+      )}.`,
     );
   }
 
-  result = insertNonInlineStyles(result, generate(nonInlineStyles));
+  result = insertNonInlineStyles(result, nonInlineCss);
   return result;
 }
 
@@ -271,9 +377,18 @@ export function Tailwind(props: TailwindProps) {
   });
   const [html] = createResource(
     () => stringifyConfig(twConfigData()),
-    async () => {
+    async (configKey) => {
+      const html = toHtml(props.children);
+      const classesUsed = collectClasses(html);
+      const renderPlanKey = `${configKey}\n${classesUsed.join('\0')}`;
+      const cachedPlan = tailwindRenderPlanCache.get(renderPlanKey);
+      if (cachedPlan) {
+        const cachedHtml = renderFromTailwindPlan(html, cachedPlan);
+        if (cachedHtml !== undefined) return cachedHtml;
+      }
+
       const setup = await setupTailwind(twConfigData());
-      return renderTailwindHtml(props.children, setup);
+      return renderTailwindHtml(html, classesUsed, setup, renderPlanKey);
     },
     { deferStream: true },
   );

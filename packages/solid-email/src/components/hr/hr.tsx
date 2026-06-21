@@ -8,10 +8,11 @@ import {
 export type HrProps = Readonly<IntrinsicProps<'hr'>>;
 
 export function Hr(props: HrProps) {
+  const classValue = cls(props);
   return (
     <hr
       {...withoutClass(props)}
-      {...(cls(props) ? { class: cls(props) } : {})}
+      {...(classValue ? { class: classValue } : {})}
       style={normalizeStyle({
         width: '100%',
         border: 'none',
