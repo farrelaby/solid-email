@@ -1,6 +1,6 @@
 ---
 name: solid-email
-description: Use when building, reviewing, testing, or documenting HTML email templates with Solid Email. Covers SolidJS email components, server rendering to HTML or plain text, Tailwind inlining, markdown, code highlighting, Vite/TanStack integration, and email-client-safe styling.
+description: Use when building, reviewing, testing, or documenting HTML email templates with Solid Email. Covers SolidJS email components, server rendering to HTML or plain text, compile-based template caching with slots, Tailwind inlining, markdown, code highlighting, Vite/TanStack integration, and email-client-safe styling.
 license: MIT
 metadata:
   author: Solid Email contributors
@@ -76,6 +76,67 @@ const html = renderSync(() => (
   <WelcomeEmail name="Ainul" actionUrl="https://example.com/start" />
 ));
 ```
+
+## Compile for repeated renders
+
+When the same template is rendered multiple times with different data, `compile()` pre-evaluates the Solid components once and reuses the cached HTML on each render.
+
+```tsx
+import { compile, Slot, slot } from '@solid-email/render';
+
+function WelcomeEmail(props: { name: string; actionUrl: string }) {
+  return (
+    <Html>
+      <Body>
+        <Container>
+          <Text>
+            Hello <Slot name="name" />!
+          </Text>
+          <Button href={slot('actionUrl')}>Get started</Button>
+        </Container>
+      </Body>
+    </Html>
+  );
+}
+
+const compiled = await compile(() => <WelcomeEmail name="" actionUrl="" />);
+
+const html = await compiled.render({ name: 'Alice', actionUrl: 'https://example.com/start' });
+const html2 = await compiled.render({ name: 'Bob', actionUrl: 'https://other.com' });
+```
+
+Slots mark dynamic parts of a compiled template:
+
+```tsx
+import { compile, Slot, slot } from '@solid-email/render';
+
+const compiled = await compile(
+  <p>
+    Hello <Slot name="name" />!
+    <a href={slot('url')}>Visit</a>
+  </p>,
+);
+
+const html = await compiled.render({ name: 'Alice', url: 'https://example.com' });
+```
+
+For typed slot names, use `defineSlots<T>()`:
+
+```tsx
+import { compile, defineSlots } from '@solid-email/render';
+
+type MySlots = { name: string; url: string };
+const slots = defineSlots<MySlots>();
+
+const compiled = await compile(
+  <p>
+    {slots.content('name', 'Guest')}
+    <a href={slots.attr('url')}>Visit</a>
+  </p>,
+);
+```
+
+Tailwind classes must be on static parent elements, not on Slot components. Slot values at runtime use inline styles or fall back to `render()`.
 
 ## Plain text
 

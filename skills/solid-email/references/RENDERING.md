@@ -56,6 +56,55 @@ const text = await render(() => <WelcomeEmail name="Ainul" actionUrl="https://ex
 });
 ```
 
+## Compile for repeated renders
+
+When the same template is rendered multiple times with different data, `compile()` pre-evaluates the Solid components once and reuses the cached HTML on each render.
+
+```tsx
+import { compile, Slot, slot } from '@solid-email/render';
+import { WelcomeEmail } from './welcome-email';
+
+const compiled = await compile(() => <WelcomeEmail name="" actionUrl="" />);
+
+const html = await compiled.render({ name: 'Alice', actionUrl: 'https://example.com/start' });
+const html2 = await compiled.render({ name: 'Bob', actionUrl: 'https://other.com' });
+```
+
+Use `compileSync()` for the synchronous equivalent. It rejects `pretty` output.
+
+Slots mark dynamic parts of a compiled template:
+
+```tsx
+import { compile, Slot, slot } from '@solid-email/render';
+
+const compiled = await compile(
+  <p>
+    Hello <Slot name="name" />!
+    <a href={slot('url')}>Visit</a>
+  </p>,
+);
+
+const html = await compiled.render({ name: 'Alice', url: 'https://example.com' });
+```
+
+For typed slot names, use `defineSlots<T>()`:
+
+```tsx
+import { compile, defineSlots } from '@solid-email/render';
+
+type MySlots = { name: string; url: string };
+const slots = defineSlots<MySlots>();
+
+const compiled = await compile(
+  <p>
+    {slots.content('name', 'Guest')}
+    <a href={slots.attr('url')}>Visit</a>
+  </p>,
+);
+```
+
+Tailwind classes must be on static parent elements, not on Slot components. Slot values at runtime use inline styles or fall back to `render()`.
+
 ## Runtime targets
 
 `@solid-email/render` provides conditional exports for common runtimes:

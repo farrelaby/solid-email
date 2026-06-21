@@ -33,11 +33,16 @@ Measured with `pnpm benchmark:rendering` on the repository marketing email fixtu
 
 | Renderer | Template | Mean | Throughput | Comparison |
 | --- | --- | ---: | ---: | --- |
-| Solid Email `render()` | Static JSX | 2.3973ms | 417.13 hz | 5.30x faster than React Email `render()` |
-| Solid Email `renderSync()` | Static JSX | 2.9353ms | 340.68 hz | 4.33x faster than React Email `render()` |
-| Solid Email `render()` | Tailwind JSX | 6.1340ms | 163.03 hz | 4.29x faster than React Email Tailwind |
-| React Email `render()` | Static JSX | 12.7043ms | 78.71 hz | Baseline |
-| React Email `render()` | Tailwind JSX | 26.3239ms | 37.99 hz | Tailwind baseline |
+| Solid Email `render()` | Static JSX | 3.8375ms | 260.58 hz | 4.53x faster than React Email `render()` |
+| Solid Email `renderSync()` | Static JSX | 4.6953ms | 212.98 hz | 3.70x faster than React Email `render()` |
+| Solid Email `render()` | Tailwind JSX | 11.6995ms | 85.47 hz | 3.07x faster than React Email Tailwind |
+| Solid Email `compileSync` render (cached) | Static JSX | 0.0107ms | 93,571 hz | 1,626x faster than React Email `render()` |
+| Solid Email `compile` render (cached) | Static JSX | 0.0816ms | 12,248 hz | 213x faster than React Email `render()` |
+| Solid Email `compile` render (cached) | Tailwind JSX | 0.0574ms | 17,429 hz | 303x faster than React Email Tailwind |
+| React Email `render()` | Static JSX | 17.3786ms | 57.54 hz | Baseline |
+| React Email `render()` | Tailwind JSX | 35.7052ms | 28.00 hz | Tailwind baseline |
+
+**Cached** means the template is compiled once and only the render step is measured. This is the expected production usage — compile at module load, render per request. The "one-time" compile+render cost is comparable to calling `render()` directly.
 
 Bundle size compares built ESM entry files after `pnpm build`; gzip uses Node's `zlib.gzipSync`.
 
@@ -92,6 +97,97 @@ import { WelcomeEmail } from './welcome-email';
 
 const html = renderSync(() => <WelcomeEmail />);
 ```
+
+## Compile for repeated renders
+
+When you render the same template multiple times with different data, `compile()` pre-evaluates the Solid components once and reuses the cached HTML on each render.
+
+```tsx
+import { compile, Slot, slot } from '@solid-email/render';
+import { Html, Body, Container, Text } from '@akin01/solid-email';
+
+function WelcomeEmail(props: { name: string; url: string }) {
+  return (
+    <Html>
+      <Body>
+        <Container>
+          <Text>
+            Hello <Slot name="name" />!
+          </Text>
+          <a href={slot('url')}>Visit</a>
+        </Container>
+      </Body>
+    </Html>
+  );
+}
+
+const compiled = await compile(() => <WelcomeEmail name="" url="" />);
+
+const html = await compiled.render({ name: 'Alice', url: 'https://example.com' });
+const html2 = await compiled.render({ name: 'Bob', url: 'https://other.com' });
+```
+
+Use `compileSync()` for the synchronous equivalent (rejects `pretty` output).
+
+### Slots
+
+Slots mark the dynamic parts of a compiled template.
+
+| API | Use case |
+| --- | --- |
+| `<Slot name="..." />` | Content slot inside JSX elements. |
+| `slot("...")` | Attribute slot for attribute values like `href` or `src`. |
+| `defineSlots<T>()` | Strongly typed slot names for editor autocomplete. |
+| `CompiledTemplate.render(data)` | Re-render the template with new slot values. |
+| `CompiledTemplate.renderSync(data)` | Synchronous re-render (no `pretty`). |
+
+#### Weak types (untyped slots)
+
+Slot names are plain strings — quick to write but no compile-time checking.
+
+```tsx
+import { compile, Slot, slot } from '@solid-email/render';
+
+const compiled = await compile(
+  <p>
+    Hello <Slot name="name" />!
+  </p>
+);
+
+// Slot names are strings, typos are silent
+const html = await compiled.render({ name: 'Alice' });
+```
+
+#### Strong types (defineSlots)
+
+`defineSlots<T>()` returns typed accessor functions so typos and missing keys are caught at compile time.
+
+```tsx
+import { compile, defineSlots } from '@solid-email/render';
+
+type MySlots = {
+  name: string;
+  url: string;
+};
+
+const slots = defineSlots<MySlots>();
+
+const compiled = await compile(
+  <p>
+    Hello {slots.content('name')}!
+    <a href={slots.attr('url')}>Visit</a>
+  </p>,
+);
+
+// TypeScript errors if you miss a key or misspell a name
+const html = await compiled.render({ name: 'Alice', url: 'https://example.com' });
+```
+
+Content slots support defaults via the second argument: `slots.content('name', 'Guest')`.
+
+### Tailwind with compiled templates
+
+Tailwind classes must be on static parent elements, not on Slot components. Slot values at runtime use inline styles or fall back to `render()`.
 
 ## Components
 

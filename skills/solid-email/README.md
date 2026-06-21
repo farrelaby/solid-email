@@ -20,6 +20,7 @@ skills/
 
 - Building email templates with SolidJS components.
 - Rendering templates to HTML and plain text.
+- Compiling templates for repeated renders with slots.
 - Using Tailwind utility inlining for email clients.
 - Writing email-client-safe markup and styles.
 - Integrating rendering in Node, Vite, TanStack Start, worker, and edge-style runtimes.
