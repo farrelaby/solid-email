@@ -31,4 +31,38 @@ declare module '@solid-email/render' {
     node: Renderable,
     options?: RenderSyncOptions,
   ): string;
+
+  export type SlotPrimitive = string | number | boolean | null | undefined;
+  export type SlotValue = SlotPrimitive | JSX.Element | SlotValue[];
+  export type SlotRecord = Record<string, SlotValue>;
+  export interface SlotOccurrence {
+    full: string;
+    hasDefault: boolean;
+    defaultValue: string;
+  }
+  export function Slot(props: {
+    name: string;
+    children?: JSX.Element;
+  }): JSX.Element;
+  export function slot(name: string): string;
+  export interface SlotDefinition<T extends SlotRecord> {
+    content: <K extends keyof T & string>(
+      name: K,
+      defaultValue?: string,
+    ) => string;
+    attr: <K extends keyof T & string>(name: K) => string;
+  }
+  export function defineSlots<T extends SlotRecord>(): SlotDefinition<T>;
+  export class CompiledTemplate<TSlots extends SlotRecord = SlotRecord> {
+    render(data: TSlots, options?: Options): Promise<string>;
+    renderSync(data: TSlots, options?: RenderSyncOptions): string;
+  }
+  export function compile<TSlots extends SlotRecord = SlotRecord>(
+    node: Renderable,
+    options?: Options,
+  ): Promise<CompiledTemplate<TSlots>>;
+  export function compileSync<TSlots extends SlotRecord = SlotRecord>(
+    node: Renderable,
+    options?: RenderSyncOptions,
+  ): CompiledTemplate<TSlots>;
 }
