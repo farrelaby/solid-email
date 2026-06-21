@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.2 - 2026-06-21
+
+### Added
+
+- Added `compile()` and `compileSync()` APIs for pre-rendering reusable email templates and replacing dynamic slot data without re-running Solid SSR for every send.
+- Added `Slot`, `slot()`, and `defineSlots<T>()` helpers for content slots, attribute slots, defaults, JSX slot values, and typed slot-name authoring.
+- Added compile rendering benchmarks and expanded Solid Email skill documentation for cached template rendering.
+
+### Changed
+
+- Re-exported the compile and slot APIs from `@akin01/solid-email` so component consumers can import them from the package root.
+- Bumped monorepo package, fixture tarball, and Solid Email skill versions to `0.1.2`.
+
+### Verified
+
+- `pnpm --filter @solid-email/render run test`
+- `pnpm lint`
+- `pnpm typecheck`
+
 ## 0.1.1 - 2026-06-21
 
 ### Changed
