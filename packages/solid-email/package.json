@@ -2,6 +2,10 @@
   "name": "@akin01/solid-email",
   "version": "0.1.0",
   "description": "High-quality Solid components for creating emails",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Akin01/solid-email"
+  },
   "type": "module",
   "types": "./dist/index.d.mts",
   "files": [

@@ -2,6 +2,10 @@
   "name": "solid-email-monorepo",
   "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Akin01/solid-email"
+  },
   "type": "module",
   "packageManager": "pnpm@11.8.0",
   "scripts": {

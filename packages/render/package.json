@@ -2,6 +2,10 @@
   "name": "@solid-email/render",
   "version": "0.1.0",
   "description": "Transform Solid components into HTML email templates",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Akin01/solid-email"
+  },
   "type": "module",
   "sideEffects": false,
   "main": "./dist/node/index.cjs",
