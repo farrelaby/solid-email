@@ -119,6 +119,16 @@ Always preview important templates in the clients your audience uses.
 | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | Gmail ✔ | Apple Mail ✔ | Outlook ✔ | Yahoo Mail ✔ | HEY ✔ | Superhuman ✔ |
 
+## Agent skill
+
+Solid Email includes an agent skill for template authoring, rendering, styling, and testing guidance.
+
+```sh
+npx skills add akin01/solid-email@solid-email
+```
+
+The skill source lives in [`skills/solid-email`](skills/solid-email).
+
 ## Development
 
 This repository uses pnpm workspaces and Biome.
