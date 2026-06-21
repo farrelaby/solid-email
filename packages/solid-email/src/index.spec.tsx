@@ -6,6 +6,9 @@ import {
   CodeInline,
   Column,
   Container,
+  compile,
+  compileSync,
+  defineSlots,
   Font,
   Head,
   Heading,
@@ -67,5 +70,37 @@ describe('public entrypoint', () => {
     expect(html).toContain('Entrypoint render');
     expect(syncHtml).toContain('Entrypoint sync render');
     expect(text).toContain('ENTRYPOINT TEXT');
+  });
+
+  it('re-exports compile and slot utilities from the package root', async () => {
+    const slots = defineSlots<{ name: string }>();
+    const compiled = await compile(
+      () => (
+        <Html>
+          <Body>
+            <Text>Hello {slots.content('name', 'World')}</Text>
+          </Body>
+        </Html>
+      ),
+      { pretty: false },
+    );
+
+    const html = await compiled.render({ name: 'Solid' });
+    expect(html).toContain('Hello Solid');
+    expect(html).not.toContain('__SM_');
+
+    const syncCompiled = compileSync(
+      () => (
+        <Html>
+          <Body>
+            <Text>Sync {slots.content('name', 'email')}</Text>
+          </Body>
+        </Html>
+      ),
+      { pretty: false },
+    );
+
+    const syncHtml = syncCompiled.renderSync({ name: 'template' });
+    expect(syncHtml).toContain('Sync template');
   });
 });
