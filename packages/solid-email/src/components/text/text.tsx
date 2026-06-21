@@ -21,10 +21,11 @@ export function Text(props: TextProps) {
     ...style,
     ...margins,
   };
+  const classValue = cls(props);
   return (
     <p
       {...withoutClass(props)}
-      {...(cls(props) ? { class: cls(props) } : {})}
+      {...(classValue ? { class: classValue } : {})}
       style={normalizeStyle(textStyle)}
     >
       {props.children}

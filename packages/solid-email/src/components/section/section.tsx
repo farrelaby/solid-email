@@ -14,6 +14,7 @@ export function Section(props: SectionProps) {
   const { tableStyle, tdStyle } = splitPadding(props.style);
   const tableHtmlStyle = normalizeStyle(tableStyle ?? null);
   const tdHtmlStyle = normalizeStyle(tdStyle);
+  const classValue = cls(props);
   return (
     <table
       attr:align="center"
@@ -23,7 +24,7 @@ export function Section(props: SectionProps) {
       attr:cellspacing="0"
       role="presentation"
       {...withoutClass(props)}
-      {...(cls(props) ? { class: cls(props) } : {})}
+      {...(classValue ? { class: classValue } : {})}
       {...(tableHtmlStyle ? { style: tableHtmlStyle } : {})}
     >
       <tbody>

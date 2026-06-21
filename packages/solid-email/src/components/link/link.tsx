@@ -8,10 +8,11 @@ import {
 export type LinkProps = Readonly<IntrinsicProps<'a'>>;
 
 export function Link(props: LinkProps) {
+  const classValue = cls(props);
   return (
     <a
       {...withoutClass(props)}
-      {...(cls(props) ? { class: cls(props) } : {})}
+      {...(classValue ? { class: classValue } : {})}
       target={props.target ?? '_blank'}
       style={normalizeStyle({
         color: '#067df7',
