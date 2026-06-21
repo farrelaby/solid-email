@@ -29,3 +29,8 @@ e2e/**/src/routeTree.gen.ts
 
 # Package build output
 packages/*/dist/
+
+# Accidental declaration output from fixture type-emission checks
+packages/solid-email/src/**/*.d.ts
+!packages/solid-email/src/render-shim.d.ts
+!packages/solid-email/src/types/prismjs-components.d.ts

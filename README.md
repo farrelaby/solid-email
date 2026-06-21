@@ -1,7 +1,13 @@
-<h1 align="center">
-  <img src="assets/solid-email-logo.png" alt="Solid Email logo" width="128" style="vertical-align: middle;" />
-  <span style="font-size: 1.75rem; vertical-align: middle;">Solid Email</span>
-</h1>
+<table align="center">
+  <tr>
+    <td valign="middle">
+      <img src="assets/solid-email-logo.png" alt="Solid Email logo" width="128" />
+    </td>
+    <td valign="middle">
+      <h1>Solid Email</h1>
+    </td>
+  </tr>
+</table>
 
 <div align="center">
   Build beautiful, reliable HTML emails with SolidJS.
