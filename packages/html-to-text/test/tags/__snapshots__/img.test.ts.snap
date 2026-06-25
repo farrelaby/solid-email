@@ -1,0 +1,102 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should replace entities inside alt attributes of images > \`\`\`html
+<img src="test.png" alt="&quot;Awesome&quot;">
+\`\`\` 1`] = `""Awesome" [test.png]"`;
+
+exports[`should return image link with custom brackets > \`\`\`html
+<img src="test.png" alt="Awesome">
+\`\`\`
+
+\`\`\`options
+{
+  "selectors": [
+    {
+      "options": {
+        "linkBrackets": [
+          "===> ",
+          " <==="
+        ]
+      },
+      "selector": "img"
+    }
+  ]
+}
+\`\`\` 1`] = `"Awesome ===> test.png <==="`;
+
+exports[`should return image link without brackets if linkBrackets is ["", ""] > \`\`\`html
+<img src="test.png" alt="Awesome">
+\`\`\`
+
+\`\`\`options
+{
+  "selectors": [
+    {
+      "options": {
+        "linkBrackets": [
+          "",
+          ""
+        ]
+      },
+      "selector": "img"
+    }
+  ]
+}
+\`\`\` 1`] = `"Awesome test.png"`;
+
+exports[`should return image link without brackets if linkBrackets is false > \`\`\`html
+<img src="test.png" alt="Awesome">
+\`\`\`
+
+\`\`\`options
+{
+  "selectors": [
+    {
+      "options": {
+        "linkBrackets": false
+      },
+      "selector": "img"
+    }
+  ]
+}
+\`\`\` 1`] = `"Awesome test.png"`;
+
+exports[`should rewrite image source path with provided metadata > \`\`\`html
+<img src="pictures/test.png">
+\`\`\`
+
+\`\`\`options
+{
+  "selectors": [
+    {
+      "options": {
+        "pathRewrite": "[Function pathRewrite]"
+      },
+      "selector": "img"
+    }
+  ]
+}
+\`\`\`
+
+\`\`\`metadata
+{
+  "assetsPath": "assets/"
+}
+\`\`\` 1`] = `"[assets/test.png]"`;
+
+exports[`should update relatively sourced images with baseUrl > \`\`\`html
+<img src="/test.png">
+\`\`\`
+
+\`\`\`options
+{
+  "selectors": [
+    {
+      "options": {
+        "baseUrl": "https://example.com"
+      },
+      "selector": "img"
+    }
+  ]
+}
+\`\`\` 1`] = `"[https://example.com/test.png]"`;

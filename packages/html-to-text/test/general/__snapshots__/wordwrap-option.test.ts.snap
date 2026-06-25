@@ -1,0 +1,148 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should honour line feeds from a long word across the wrap, where the line feed is before the wrap > \`\`\`html
+<p>This string is meant to test if a string is split properly across a
+newlineandlongword with following text.</p>
+\`\`\`
+
+\`\`\`options
+{}
+\`\`\` 1`] = `
+"This string is meant to test if a string is split properly across a
+newlineandlongword with following text."
+`;
+
+exports[`should not exceed the line width when processing anchor tags > \`\`\`html
+<p>We appreciate your business. And we hope you'll check out our <a href="http://example.com/">new products</a>!</p>
+\`\`\`
+
+\`\`\`options
+{}
+\`\`\` 1`] = `
+"We appreciate your business. And we hope you'll check out our new products
+[http://example.com/]!"
+`;
+
+exports[`should not exceed the line width when processing embedded format tags > \`\`\`html
+<p><strong>This text isn't counted</strong> when calculating where to break a string for 80 character line lengths.</p>
+\`\`\`
+
+\`\`\`options
+{}
+\`\`\` 1`] = `
+"This text isn't counted when calculating where to break a string for 80
+character line lengths."
+`;
+
+exports[`should not wordwrap when given false > \`\`\`html
+111111111 222222222 333333333 444444444 555555555 666666666 777777777 888888888 999999999
+\`\`\`
+
+\`\`\`options
+{
+  "wordwrap": false
+}
+\`\`\` 1`] = `"111111111 222222222 333333333 444444444 555555555 666666666 777777777 888888888 999999999"`;
+
+exports[`should not wordwrap when given null > \`\`\`html
+111111111 222222222 333333333 444444444 555555555 666666666 777777777 888888888 999999999
+\`\`\`
+
+\`\`\`options
+{
+  "wordwrap": null
+}
+\`\`\` 1`] = `"111111111 222222222 333333333 444444444 555555555 666666666 777777777 888888888 999999999"`;
+
+exports[`should not wrongly truncate lines when processing embedded format tags > \`\`\`html
+<p><strong>This text isn't counted</strong> when calculating where to break a string for 80 character line lengths.  However it can affect where the next line breaks and this could lead to having an early line break</p>
+\`\`\`
+
+\`\`\`options
+{}
+\`\`\` 1`] = `
+"This text isn't counted when calculating where to break a string for 80
+character line lengths. However it can affect where the next line breaks and
+this could lead to having an early line break"
+`;
+
+exports[`should remove line feeds from a long word across the wrap, where the line feed is after the wrap > \`\`\`html
+<p>This string is meant to test if a string is split properly across anewlineandlong
+word with following text.</p>
+\`\`\`
+
+\`\`\`options
+{}
+\`\`\` 1`] = `
+"This string is meant to test if a string is split properly across
+anewlineandlong word with following text."
+`;
+
+exports[`should wordwrap at 80 characters by default > \`\`\`html
+111111111 222222222 333333333 444444444 555555555 666666666 777777777 888888888 999999999
+\`\`\` 1`] = `
+"111111111 222222222 333333333 444444444 555555555 666666666 777777777 888888888
+999999999"
+`;
+
+exports[`should wordwrap at given number of characters > wordwrap at 20 characters
+
+\`\`\`html
+111111111 222222222 333333333 444444444 555555555 666666666 777777777 888888888 999999999
+\`\`\`
+
+\`\`\`options
+{
+  "wordwrap": 20
+}
+\`\`\` 1`] = `
+"111111111 222222222
+333333333 444444444
+555555555 666666666
+777777777 888888888
+999999999"
+`;
+
+exports[`should wordwrap at given number of characters > wordwrap at 50 characters
+
+\`\`\`html
+111111111 222222222 333333333 444444444 555555555 666666666 777777777 888888888 999999999
+\`\`\`
+
+\`\`\`options
+{
+  "wordwrap": 50
+}
+\`\`\` 1`] = `
+"111111111 222222222 333333333 444444444 555555555
+666666666 777777777 888888888 999999999"
+`;
+
+exports[`should wordwrap at given number of characters > wordwrap at 70 characters
+
+\`\`\`html
+111111111 222222222 333333333 444444444 555555555 666666666 777777777 888888888 999999999
+\`\`\`
+
+\`\`\`options
+{
+  "wordwrap": 70
+}
+\`\`\` 1`] = `
+"111111111 222222222 333333333 444444444 555555555 666666666 777777777
+888888888 999999999"
+`;
+
+exports[`should work with a long string containing line feeds > \`\`\`html
+<p>If a word with a line feed exists over the line feed boundary then
+you
+must
+respect it.</p>
+\`\`\`
+
+\`\`\`options
+{}
+\`\`\` 1`] = `
+"If a word with a line feed exists over the line feed boundary then you must
+respect it."
+`;

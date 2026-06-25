@@ -1,13 +1,19 @@
 {
   "name": "tsconfig",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "files": [
     "base.json",
-    "solid-library.json"
+    "node-vitest.json",
+    "solid-library.json",
+    "solid-node-vitest.json",
+    "solid-vite-app.json"
   ],
   "exports": {
     "./base.json": "./base.json",
-    "./solid-library.json": "./solid-library.json"
+    "./node-vitest.json": "./node-vitest.json",
+    "./solid-library.json": "./solid-library.json",
+    "./solid-node-vitest.json": "./solid-node-vitest.json",
+    "./solid-vite-app.json": "./solid-vite-app.json"
   }
 }

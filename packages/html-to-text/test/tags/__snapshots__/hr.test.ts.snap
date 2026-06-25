@@ -1,0 +1,50 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should output horizontal line of default length > \`\`\`html
+<div>foo</div><hr/><div>bar</div>
+\`\`\` 1`] = `
+"foo
+
+--------------------------------------------------------------------------------
+
+bar"
+`;
+
+exports[`should output horizontal line of length 40 when wordwrap is disabled > \`\`\`html
+<div>foo</div><hr/><div>bar</div>
+\`\`\`
+
+\`\`\`options
+{
+  "wordwrap": false
+}
+\`\`\` 1`] = `
+"foo
+
+----------------------------------------
+
+bar"
+`;
+
+exports[`should output horizontal line of specific length > \`\`\`html
+<div>foo</div><hr/><div>bar</div>
+\`\`\`
+
+\`\`\`options
+{
+  "selectors": [
+    {
+      "options": {
+        "length": 30
+      },
+      "selector": "hr"
+    }
+  ]
+}
+\`\`\` 1`] = `
+"foo
+
+------------------------------
+
+bar"
+`;

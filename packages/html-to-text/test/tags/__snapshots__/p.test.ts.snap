@@ -1,0 +1,36 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should allow to change the number of linebreaks > \`\`\`html
+text<p>first</p><p>second</p>text
+\`\`\`
+
+\`\`\`options
+{
+  "selectors": [
+    {
+      "options": {
+        "leadingLineBreaks": 1,
+        "trailingLineBreaks": 1
+      },
+      "selector": "p"
+    }
+  ]
+}
+\`\`\` 1`] = `
+"text
+first
+second
+text"
+`;
+
+exports[`should separate paragraphs from surrounding content by two linebreaks > \`\`\`html
+text<p>first</p><p>second</p>text
+\`\`\` 1`] = `
+"text
+
+first
+
+second
+
+text"
+`;

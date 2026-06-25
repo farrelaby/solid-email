@@ -1,0 +1,264 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should fallback to type=1 if type attribute is invalid > \`\`\`html
+<ol type="whatever"><li>foo</li><li>bar</li></ol>
+\`\`\` 1`] = `
+" 1. foo
+ 2. bar"
+`;
+
+exports[`should handle empty ordered lists > \`\`\`html
+<ol></ol>
+\`\`\` 1`] = `""`;
+
+exports[`should handle empty unordered lists > \`\`\`html
+<ul></ul>
+\`\`\` 1`] = `""`;
+
+exports[`should handle long nested ordered lists correctly > \`\`\`html
+<ol>
+    <li>At vero eos et accusam et justo duo dolores et ea rebum. Stet clita k a s d g u b e r g r e n, no sea takimata sanctus est Lorem ipsum dolor sit amet.</li>
+    <li>At vero eos et accusam et justo duo dolores et ea rebum. Stet clita k a s d g u b e r g r e n, no sea takimata sanctus est Lorem ipsum dolor sit amet.</li>
+    <li>Inner:
+      <ol>
+        <li>At vero eos et accusam et justo duo dolores et ea rebum. Stet clita k a s d g u b e r g r e n, no sea takimata sanctus est Lorem ipsum dolor sit amet.</li>
+        <li>At vero eos et accusam et justo duo dolores et ea rebum. Stet clita k a s d g u b e r g r e n, no sea takimata sanctus est Lorem ipsum dolor sit amet.</li>
+      </ol>
+    </li>
+  </ol>
+\`\`\` 1`] = `
+" 1. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita k a s d
+    g u b e r g r e n, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+ 2. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita k a s d
+    g u b e r g r e n, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+ 3. Inner:
+    1. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita k a s
+       d g u b e r g r e n, no sea takimata sanctus est Lorem ipsum dolor sit
+       amet.
+    2. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita k a s
+       d g u b e r g r e n, no sea takimata sanctus est Lorem ipsum dolor sit
+       amet."
+`;
+
+exports[`should handle long nested unordered lists correctly > \`\`\`html
+<ul>
+    <li>At vero eos et accusam et justo duo dolores et ea rebum. Stet clita k a s d g u b e r g r e n, no sea takimata sanctus est Lorem ipsum dolor sit amet.</li>
+    <li>At vero eos et accusam et justo duo dolores et ea rebum. Stet clita k a s d g u b e r g r e n, no sea takimata sanctus est Lorem ipsum dolor sit amet.</li>
+    <li>Inner:
+      <ul>
+        <li>At vero eos et accusam et justo duo dolores et ea rebum. Stet clita k a s d g u b e r g r e n, no sea takimata sanctus est Lorem ipsum dolor sit amet.</li>
+        <li>At vero eos et accusam et justo duo dolores et ea rebum. Stet clita k a s d g u b e r g r e n, no sea takimata sanctus est Lorem ipsum dolor sit amet.</li>
+      </ul>
+    </li>
+  </ul>
+\`\`\` 1`] = `
+" * At vero eos et accusam et justo duo dolores et ea rebum. Stet clita k a s d g
+   u b e r g r e n, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+ * At vero eos et accusam et justo duo dolores et ea rebum. Stet clita k a s d g
+   u b e r g r e n, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+ * Inner:
+   * At vero eos et accusam et justo duo dolores et ea rebum. Stet clita k a s d
+     g u b e r g r e n, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+   * At vero eos et accusam et justo duo dolores et ea rebum. Stet clita k a s d
+     g u b e r g r e n, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+`;
+
+exports[`should handle nested ordered lists correctly > \`\`\`html
+<ol><li>foo<ol><li>bar<ol><li>baz</li><li>baz</li></ol></li></ol></li></ol>
+\`\`\` 1`] = `
+" 1. foo
+    1. bar
+       1. baz
+       2. baz"
+`;
+
+exports[`should handle nested unordered lists correctly > \`\`\`html
+<ul><li>foo<ul><li>bar<ul><li>baz.1</li><li>baz.2</li></ul></li></ul></li></ul>
+\`\`\` 1`] = `
+" * foo
+   * bar
+     * baz.1
+     * baz.2"
+`;
+
+exports[`should handle non-li elements inside a list gracefully > \`\`\`html
+
+    <ul>
+      <li>list item</li>
+      plain text
+      <li>list item</li>
+      <div>div</div>
+      <li>list item</li>
+      <p>paragraph</p>
+      <li>list item</li>
+    </ul>
+  
+\`\`\` 1`] = `
+" * list item
+   plain text
+ * list item
+   div
+ * list item
+
+   paragraph
+
+ * list item"
+`;
+
+exports[`should handle ordered list with multiple elements > \`\`\`html
+<ol><li>foo</li><li>bar</li></ol>
+\`\`\` 1`] = `
+" 1. foo
+ 2. bar"
+`;
+
+exports[`should handle unordered list prefix option > \`\`\`html
+<ul><li>foo</li><li>bar</li></ul>
+\`\`\`
+
+\`\`\`options
+{
+  "selectors": [
+    {
+      "options": {
+        "itemPrefix": " test "
+      },
+      "selector": "ul"
+    }
+  ]
+}
+\`\`\` 1`] = `
+" test foo
+ test bar"
+`;
+
+exports[`should handle unordered list with multiple elements > \`\`\`html
+<ul><li>foo</li><li>bar</li></ul>
+\`\`\` 1`] = `
+" * foo
+ * bar"
+`;
+
+exports[`should not wrap list items when wordwrap is disabled > \`\`\`html
+Good morning Jacob,
+    <p>Lorem ipsum dolor sit amet</p>
+    <p><strong>Lorem ipsum dolor sit amet.</strong></p>
+    <ul>
+      <li>run in the park <span style="color:#888888;">(in progress)</span></li>
+    </ul>
+  
+\`\`\`
+
+\`\`\`options
+{
+  "wordwrap": false
+}
+\`\`\` 1`] = `
+"Good morning Jacob,
+
+Lorem ipsum dolor sit amet
+
+Lorem ipsum dolor sit amet.
+
+ * run in the park (in progress)"
+`;
+
+exports[`should support ordered list start attribute > \`\`\`html
+<ol start="100"><li>foo</li><li>bar</li></ol>
+\`\`\` 1`] = `
+" 100. foo
+ 101. bar"
+`;
+
+exports[`should support ordered list type=1 attribute > \`\`\`html
+<ol type="1"><li>foo</li><li>bar</li></ol>
+\`\`\` 1`] = `
+" 1. foo
+ 2. bar"
+`;
+
+exports[`should support ordered list type=A attribute > \`\`\`html
+<ol type="A"><li>foo</li><li>bar</li></ol>
+\`\`\` 1`] = `
+" A. foo
+ B. bar"
+`;
+
+exports[`should support ordered list type=A attribute past 26 characters > ordered list type A past 26
+
+\`\`\`html
+<ol start="26" type="A"><li>foo</li><li>bar</li></ol>
+\`\`\` 1`] = `
+" Z.  foo
+ AA. bar"
+`;
+
+exports[`should support ordered list type=A attribute past 26 characters > ordered list type A past 702
+
+\`\`\`html
+<ol start="702" type="A"><li>foo</li><li>bar</li></ol>
+\`\`\` 1`] = `
+" ZZ.  foo
+ AAA. bar"
+`;
+
+exports[`should support ordered list type=I attribute > ordered list type I
+
+\`\`\`html
+<ol type="I"><li>foo</li><li>bar</li></ol>
+\`\`\` 1`] = `
+" I.  foo
+ II. bar"
+`;
+
+exports[`should support ordered list type=I attribute > ordered list type I with start
+
+\`\`\`html
+<ol start="8" type="I"><li>foo</li><li>bar</li></ol>
+\`\`\` 1`] = `
+" VIII. foo
+ IX.   bar"
+`;
+
+exports[`should support ordered list type=a attribute > \`\`\`html
+<ol type="a"><li>foo</li><li>bar</li></ol>
+\`\`\` 1`] = `
+" a. foo
+ b. bar"
+`;
+
+exports[`should support ordered list type=a attribute past 26 characters > ordered list type a past 26
+
+\`\`\`html
+<ol start="26" type="a"><li>foo</li><li>bar</li></ol>
+\`\`\` 1`] = `
+" z.  foo
+ aa. bar"
+`;
+
+exports[`should support ordered list type=a attribute past 26 characters > ordered list type a past 702
+
+\`\`\`html
+<ol start="702" type="a"><li>foo</li><li>bar</li></ol>
+\`\`\` 1`] = `
+" zz.  foo
+ aaa. bar"
+`;
+
+exports[`should support ordered list type=i attribute > ordered list type i
+
+\`\`\`html
+<ol type="i"><li>foo</li><li>bar</li></ol>
+\`\`\` 1`] = `
+" i.  foo
+ ii. bar"
+`;
+
+exports[`should support ordered list type=i attribute > ordered list type i with start
+
+\`\`\`html
+<ol start="8" type="i"><li>foo</li><li>bar</li></ol>
+\`\`\` 1`] = `
+" viii. foo
+ ix.   bar"
+`;

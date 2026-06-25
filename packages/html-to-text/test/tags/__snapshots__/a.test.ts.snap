@@ -1,0 +1,176 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should decode html attribute entities from href > \`\`\`html
+<a href="/foo?a&#x3D;b">test</a>
+\`\`\` 1`] = `"test [/foo?a=b]"`;
+
+exports[`should not insert null bytes > \`\`\`html
+<a href="some-url?a=b&amp;b=c">Testing &amp; Done</a>
+\`\`\` 1`] = `"Testing & Done [some-url?a=b&b=c]"`;
+
+exports[`should not return link for anchor if noAnchorUrl is true > \`\`\`html
+<a href="#link">test</a>
+\`\`\`
+
+\`\`\`options
+{
+  "selectors": [
+    {
+      "options": {
+        "noAnchorUrl": true
+      },
+      "selector": "a"
+    }
+  ]
+}
+\`\`\` 1`] = `"test"`;
+
+exports[`should not uppercase links inside headings > \`\`\`html
+<h1><a href="http://example.com">Heading</a></h1>
+\`\`\` 1`] = `"HEADING [http://example.com]"`;
+
+exports[`should not uppercase links inside table header cells > \`\`\`html
+
+    <table>
+      <tr>
+        <th>Header cell 1</th>
+        <th><a href="http://example.com">Header cell 2</a></th>
+        <td><a href="http://example.com">Regular cell</a></td>
+      </tr>
+    </table>
+  
+\`\`\`
+
+\`\`\`options
+{
+  "selectors": [
+    {
+      "format": "dataTable",
+      "selector": "table"
+    }
+  ]
+}
+\`\`\` 1`] = `"HEADER CELL 1   HEADER CELL 2 [http://example.com]   Regular cell [http://example.com]"`;
+
+exports[`should return link for anchor if noAnchorUrl is false > \`\`\`html
+<a href="#link">test</a>
+\`\`\`
+
+\`\`\`options
+{
+  "selectors": [
+    {
+      "options": {
+        "noAnchorUrl": false
+      },
+      "selector": "a"
+    }
+  ]
+}
+\`\`\` 1`] = `"test [#link]"`;
+
+exports[`should return link with brackets by default > \`\`\`html
+<a href="http://my.link">test</a>
+\`\`\` 1`] = `"test [http://my.link]"`;
+
+exports[`should return link with custom brackets > \`\`\`html
+<a href="http://my.link">test</a>
+\`\`\`
+
+\`\`\`options
+{
+  "selectors": [
+    {
+      "options": {
+        "linkBrackets": [
+          "===> ",
+          " <==="
+        ]
+      },
+      "selector": "a"
+    }
+  ]
+}
+\`\`\` 1`] = `"test ===> http://my.link <==="`;
+
+exports[`should return link without brackets if linkBrackets is ["", ""] > \`\`\`html
+<a href="http://my.link">test</a>
+\`\`\`
+
+\`\`\`options
+{
+  "selectors": [
+    {
+      "options": {
+        "linkBrackets": [
+          "",
+          ""
+        ]
+      },
+      "selector": "a"
+    }
+  ]
+}
+\`\`\` 1`] = `"test http://my.link"`;
+
+exports[`should return link without brackets if linkBrackets is false > \`\`\`html
+<a href="http://my.link">test</a>
+\`\`\`
+
+\`\`\`options
+{
+  "selectors": [
+    {
+      "options": {
+        "linkBrackets": false
+      },
+      "selector": "a"
+    }
+  ]
+}
+\`\`\` 1`] = `"test http://my.link"`;
+
+exports[`should rewrite link href path with provided metadata > \`\`\`html
+<a href="/test.html">test</a>
+\`\`\`
+
+\`\`\`options
+{
+  "selectors": [
+    {
+      "options": {
+        "baseUrl": "https://example.com",
+        "pathRewrite": "[Function pathRewrite]"
+      },
+      "selector": "a"
+    }
+  ]
+}
+\`\`\`
+
+\`\`\`metadata
+{
+  "path": "/foo/bar"
+}
+\`\`\` 1`] = `"test [https://example.com/foo/bar/test.html]"`;
+
+exports[`should strip mailto from email links > \`\`\`html
+<a href="mailto:foo@example.com">email me</a>
+\`\`\` 1`] = `"email me [foo@example.com]"`;
+
+exports[`should update relatively sourced links with baseUrl > \`\`\`html
+<a href="/test.html">test</a>
+\`\`\`
+
+\`\`\`options
+{
+  "selectors": [
+    {
+      "options": {
+        "baseUrl": "https://example.com"
+      },
+      "selector": "a"
+    }
+  ]
+}
+\`\`\` 1`] = `"test [https://example.com/test.html]"`;
