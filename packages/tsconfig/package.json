@@ -3,6 +3,7 @@
   "version": "0.1.3",
   "private": true,
   "files": [
+    "LICENSE",
     "base.json",
     "node-vitest.json",
     "solid-library.json",
