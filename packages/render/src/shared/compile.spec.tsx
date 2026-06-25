@@ -1,3 +1,4 @@
+import type { FormatCallback } from '@solid-email/html-to-text';
 import type { JSX } from 'solid-js';
 import { describe, expect, it, vi } from 'vitest';
 import { compile, compileSync } from './compile';
@@ -201,6 +202,170 @@ describe('compile', () => {
     expect(text).not.toContain('<div>');
   });
 
+  it('keeps HTML as the default output when plain text is precompiled', async () => {
+    const email = await compile(
+      <p>
+        <Slot name="msg" />
+      </p>,
+      { withPlainText: true },
+    );
+
+    const html = await email.render({ msg: 'Hello World' });
+
+    expect(html).toContain('<!DOCTYPE html PUBLIC');
+    expect(html).toContain('<p>Hello World</p>');
+  });
+
+  it('uses compile-time text options for precompiled plain text slots', async () => {
+    const email = await compile(
+      <p>
+        <Slot name="msg" />
+      </p>,
+      {
+        htmlToTextOptions: {
+          selectors: [{ selector: 'em', format: 'skip' }],
+        },
+        withPlainText: true,
+      },
+    );
+
+    const text = await email.render(
+      {
+        msg: (
+          <>
+            <span>Keep</span>
+            <em>Drop</em>
+          </>
+        ),
+      },
+      { plainText: true },
+    );
+
+    expect(text).toContain('Keep');
+    expect(text).not.toContain('Drop');
+  });
+
+  it('uses a conditional text token for dynamic data-skip-in-text', async () => {
+    let spanFormatCount = 0;
+    const countingSpan: FormatCallback = (elem, walk, builder) => {
+      spanFormatCount += 1;
+      walk(elem.children, builder);
+    };
+    const email = await compile(
+      <div>
+        <span data-skip-in-text={slot('skip')}>Secret</span>
+        <p>Shown</p>
+      </div>,
+      {
+        htmlToTextOptions: {
+          formatters: { countingSpan },
+          selectors: [{ selector: 'span', format: 'countingSpan' }],
+        },
+        withPlainText: true,
+      },
+    );
+
+    expect(spanFormatCount).toBe(1);
+
+    const hidden = await email.render({ skip: true }, { plainText: true });
+    const visible = await email.render({ skip: false }, { plainText: true });
+
+    expect(hidden).toContain('Shown');
+    expect(hidden).not.toContain('Secret');
+    expect(visible).toContain('Shown');
+    expect(visible).toContain('Secret');
+    expect(spanFormatCount).toBe(1);
+  });
+
+  it('uses a link href text token for default link formatting', async () => {
+    const email = await compile(<a href={slot('url')}>Email</a>, {
+      withPlainText: true,
+    });
+
+    const text = await email.render(
+      { url: 'mailto:hello@example.com' },
+      { plainText: true },
+    );
+
+    expect(text).toContain('Email');
+    expect(text).toContain('hello@example.com');
+    expect(text).not.toContain('mailto:hello@example.com');
+  });
+
+  it('omits hash-only dynamic link hrefs in precompiled plain text', async () => {
+    const email = await compile(<a href={slot('url')}>Section</a>, {
+      withPlainText: true,
+    });
+
+    const text = await email.render({ url: '#section' }, { plainText: true });
+
+    expect(text).toContain('Section');
+    expect(text).not.toContain('#section');
+  });
+
+  it('falls back when link text content uses the same slot as href', async () => {
+    const email = await compile(
+      <a href={slot('url')}>
+        <Slot name="url" />
+      </a>,
+      { withPlainText: true },
+    );
+
+    const text = await email.render(
+      { url: 'https://example.com' },
+      { plainText: true },
+    );
+
+    expect(text.match(/https:\/\/example\.com/g)).toHaveLength(1);
+  });
+
+  it('falls back for dynamic links when custom text options are provided', async () => {
+    const email = await compile(<a href={slot('url')}>Email</a>, {
+      htmlToTextOptions: {
+        selectors: [{ selector: 'em', format: 'skip' }],
+      },
+      withPlainText: true,
+    });
+
+    const text = await email.render(
+      { url: 'mailto:hello@example.com' },
+      { plainText: true },
+    );
+
+    expect(text).toContain('hello@example.com');
+    expect(text).not.toContain('mailto:hello@example.com');
+  });
+
+  it('falls back when an attr slot is unsupported by the text engine', async () => {
+    const email = await compile(
+      <div>
+        <span title={slot('title')}>Visible</span>
+      </div>,
+      { withPlainText: true },
+    );
+
+    const text = await email.render({ title: 'Tooltip' }, { plainText: true });
+
+    expect(text).toContain('Visible');
+    expect(text).not.toContain('__SM_ATR_');
+  });
+
+  it('does not process text markers introduced by slot values', async () => {
+    const email = await compile(
+      <p>
+        <Slot name="body" />
+      </p>,
+      { withPlainText: true },
+    );
+
+    const text = await email.render(
+      { body: '__SM_CNT_x____SM_CNE_x__' },
+      { plainText: true },
+    );
+
+    expect(text).toContain('__SM_CNT_x____SM_CNE_x__');
+  });
+
   it('returns pretty HTML when pretty option is set', async () => {
     const email = await compile(
       <div>
@@ -324,12 +489,12 @@ describe('compileSync', () => {
     );
   });
 
-  it('rejects pretty option saved during async compile', async () => {
-    const email = await compile(<p>static</p>, { pretty: true });
-    // biome-ignore lint/suspicious/noExplicitAny: testing error path
-    expect(() => email.renderSync({} as any)).toThrow(
-      'renderSync does not support pretty output',
-    );
+  it('keeps compile options separate from renderSync output selection', async () => {
+    const email = await compile(<p>static</p>, { withPlainText: true });
+    // biome-ignore lint/suspicious/noExplicitAny: testing empty slot data
+    const html = email.renderSync({} as any);
+    expect(html).toContain('<!DOCTYPE html PUBLIC');
+    expect(html).toContain('<p>static</p>');
   });
 
   it('renders plain text synchronously', () => {
@@ -340,6 +505,39 @@ describe('compileSync', () => {
     );
     const text = email.renderSync({ msg: 'Hello' }, { plainText: true });
     expect(text).toBe('Hello');
+  });
+
+  it('uses conditional text tokens synchronously', () => {
+    const email = compileSync(
+      <div>
+        <span data-skip-in-text={slot('skip')}>Secret sync</span>
+        <p>Shown sync</p>
+      </div>,
+      { withPlainText: true },
+    );
+
+    const hidden = email.renderSync({ skip: true }, { plainText: true });
+    const visible = email.renderSync({ skip: false }, { plainText: true });
+
+    expect(hidden).toContain('Shown sync');
+    expect(hidden).not.toContain('Secret sync');
+    expect(visible).toContain('Shown sync');
+    expect(visible).toContain('Secret sync');
+  });
+
+  it('uses link href text tokens synchronously', () => {
+    const email = compileSync(<a href={slot('url')}>Email sync</a>, {
+      withPlainText: true,
+    });
+
+    const text = email.renderSync(
+      { url: 'mailto:hello@example.com' },
+      { plainText: true },
+    );
+
+    expect(text).toContain('Email sync');
+    expect(text).toContain('hello@example.com');
+    expect(text).not.toContain('mailto:hello@example.com');
   });
 
   it('renders JSX content slot values synchronously', () => {
