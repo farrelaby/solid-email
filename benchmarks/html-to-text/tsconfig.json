@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "tsconfig/solid-node-vitest.json",
+  "compilerOptions": {
+    "paths": {
+      "@akin01/solid-email": ["../../packages/solid-email/src/index.ts"],
+      "@solid-email/html-to-text": ["../../packages/html-to-text/src/index.ts"],
+      "@solid-email/render": ["../../packages/render/src/node/index.ts"]
+    }
+  },
+  "include": [
+    "html-to-text.bench.ts",
+    "solid-compiled-template.tsx",
+    "react-text-template.tsx",
+    "text-render-fixture-data.ts",
+    "vitest.config.ts",
+    "../utils.ts",
+    "../../packages/render/src/shared/solid-js-web-server.d.ts"
+  ],
+  "exclude": ["dist", "node_modules"]
+}

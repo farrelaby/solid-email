@@ -1,4 +1,4 @@
-import type { HtmlToTextOptions } from 'html-to-text';
+import type { HtmlToTextOptions } from '@solid-email/html-to-text';
 
 type PlainTextDisabled = {
   plainText?: false;
@@ -18,3 +18,20 @@ export type Options = {
 export type RenderSyncOptions = {
   pretty?: false;
 } & PlainTextOptions;
+
+export type CompileOptions = {
+  withPlainText?: boolean;
+  htmlToTextOptions?: HtmlToTextOptions;
+};
+
+export type CompileSyncOptions = CompileOptions;
+
+export type CompiledRenderOptions = {
+  pretty?: boolean;
+  plainText?: boolean;
+};
+
+export type CompiledRenderSyncOptions = {
+  pretty?: false;
+  plainText?: boolean;
+};

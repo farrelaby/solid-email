@@ -1,0 +1,198 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should account for trailing/leading linebreaks of adjacent blocks equally > \`\`\`html
+<p>A</p>
+<div>B</div>
+<div>C</div>
+<p>D</p>
+\`\`\`
+
+\`\`\`options
+{
+  "preserveNewlines": true
+}
+\`\`\` 1`] = `
+"A
+
+
+B
+
+C
+
+
+D"
+`;
+
+exports[`should have no special behavior in presence of words among linebreaks > \`\`\`html
+<p>A</p> 
+ B 
+ <p>C</p>
+\`\`\`
+
+\`\`\`options
+{
+  "preserveNewlines": true
+}
+\`\`\` 1`] = `
+"A
+
+
+B
+
+
+C"
+`;
+
+exports[`should not preserve newlines by default > \`\`\`html
+<p
+>One
+Two
+Three</p>
+\`\`\` 1`] = `"One Two Three"`;
+
+exports[`should preserve line feeds in a long string containing line feeds across the wrap > \`\`\`html
+<p>If a word with a line feed exists over the line feed boundary then
+you must respect it.</p>
+\`\`\`
+
+\`\`\`options
+{
+  "preserveNewlines": true
+}
+\`\`\` 1`] = `
+"If a word with a line feed exists over the line feed boundary then
+you must respect it."
+`;
+
+exports[`should preserve line feeds in a long string containing line feeds across the wrap with a line feed after 80 chars > \`\`\`html
+<p>This string is meant to test if a string is split properly across anewlineandlong
+word with following text.</p>
+\`\`\`
+
+\`\`\`options
+{
+  "preserveNewlines": true
+}
+\`\`\` 1`] = `
+"This string is meant to test if a string is split properly across
+anewlineandlong
+word with following text."
+`;
+
+exports[`should preserve line feeds in a long string containing line feeds across the wrap with a line feed before 80 chars > \`\`\`html
+<p>This string is meant to test if a string is split properly across a
+newlineandlongword with following text.</p>
+\`\`\`
+
+\`\`\`options
+{
+  "preserveNewlines": true
+}
+\`\`\` 1`] = `
+"This string is meant to test if a string is split properly across a
+newlineandlongword with following text."
+`;
+
+exports[`should preserve line feeds in a long wrapping string containing line feeds > \`\`\`html
+<p>If a word with a line feed exists over the line feed boundary then
+you
+must
+respect it.</p>
+\`\`\`
+
+\`\`\`options
+{
+  "preserveNewlines": true
+}
+\`\`\` 1`] = `
+"If a word with a line feed exists over the line feed boundary then
+you
+must
+respect it."
+`;
+
+exports[`should preserve newlines when provided with a truthy value > \`\`\`html
+<p
+>One
+Two
+Three</p>
+\`\`\`
+
+\`\`\`options
+{
+  "preserveNewlines": true
+}
+\`\`\` 1`] = `
+"One
+Two
+Three"
+`;
+
+exports[`should remove spaces if they occur around line feed > \`\`\`html
+<p>A string of text
+with 
+multiple
+ spaces   
+   that 
+ 
+ can be safely removed.</p>
+\`\`\`
+
+\`\`\`options
+{
+  "preserveNewlines": true
+}
+\`\`\` 1`] = `
+"A string of text
+with
+multiple
+spaces
+that
+
+can be safely removed."
+`;
+
+exports[`should remove spaces if they occur around line feed 2 > \`\`\`html
+multiple
+ spaces
+\`\`\`
+
+\`\`\`options
+{
+  "preserveNewlines": true
+}
+\`\`\` 1`] = `
+"multiple
+spaces"
+`;
+
+exports[`should split long lines > \`\`\`html
+<p>If a word with a line feed exists over the line feed boundary then you must respect it.</p>
+\`\`\`
+
+\`\`\`options
+{
+  "preserveNewlines": true
+}
+\`\`\` 1`] = `
+"If a word with a line feed exists over the line feed boundary then you must
+respect it."
+`;
+
+exports[`should work with multiple linebreaks and in presence of whitespaces > \`\`\`html
+<p>A</p> 
+ 
+ <p>B</p>
+\`\`\`
+
+\`\`\`options
+{
+  "preserveNewlines": true
+}
+\`\`\` 1`] = `
+"A
+
+
+
+B"
+`;

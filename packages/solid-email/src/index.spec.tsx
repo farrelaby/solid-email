@@ -74,31 +74,25 @@ describe('public entrypoint', () => {
 
   it('re-exports compile and slot utilities from the package root', async () => {
     const slots = defineSlots<{ name: string }>();
-    const compiled = await compile(
-      () => (
-        <Html>
-          <Body>
-            <Text>Hello {slots.content('name', 'World')}</Text>
-          </Body>
-        </Html>
-      ),
-      { pretty: false },
-    );
+    const compiled = await compile(() => (
+      <Html>
+        <Body>
+          <Text>Hello {slots.content('name', 'World')}</Text>
+        </Body>
+      </Html>
+    ));
 
     const html = await compiled.render({ name: 'Solid' });
     expect(html).toContain('Hello Solid');
     expect(html).not.toContain('__SM_');
 
-    const syncCompiled = compileSync(
-      () => (
-        <Html>
-          <Body>
-            <Text>Sync {slots.content('name', 'email')}</Text>
-          </Body>
-        </Html>
-      ),
-      { pretty: false },
-    );
+    const syncCompiled = compileSync(() => (
+      <Html>
+        <Body>
+          <Text>Sync {slots.content('name', 'email')}</Text>
+        </Body>
+      </Html>
+    ));
 
     const syncHtml = syncCompiled.renderSync({ name: 'template' });
     expect(syncHtml).toContain('Sync template');

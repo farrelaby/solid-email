@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should decode &#128514; to 😂 > \`\`\`html
+&#128514;
+\`\`\` 1`] = `"😂"`;
+
+exports[`should decode &lt;&gt; to <> > \`\`\`html
+<span>span</span>, &lt;not a span&gt;
+\`\`\` 1`] = `"span, <not a span>"`;

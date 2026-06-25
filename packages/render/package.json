@@ -1,6 +1,6 @@
 {
   "name": "@solid-email/render",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Transform Solid components into HTML email templates",
   "repository": {
     "type": "git",
@@ -109,14 +109,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "html-to-text": "catalog:",
+    "@solid-email/html-to-text": "workspace:*",
     "prettier": "catalog:"
   },
   "peerDependencies": {
     "solid-js": "catalog:"
   },
   "devDependencies": {
-    "@types/html-to-text": "catalog:",
     "solid-js": "catalog:",
     "tsconfig": "workspace:*",
     "tsdown": "catalog:",

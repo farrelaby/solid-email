@@ -1,0 +1,148 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should allow to add support for different tags > \`\`\`html
+<div><foo>foo<br/>content</foo><bar src="bar.src" /></div>
+\`\`\`
+
+\`\`\`options
+{
+  "formatters": {
+    "formatBar": "[Function formatBar]",
+    "formatFoo": "[Function formatFoo]"
+  },
+  "selectors": [
+    {
+      "format": "formatFoo",
+      "selector": "foo"
+    },
+    {
+      "format": "formatBar",
+      "selector": "bar"
+    }
+  ]
+}
+\`\`\` 1`] = `
+"[FOO]foo
+content[/FOO]
+[BAR src="bar.src"]"
+`;
+
+exports[`should allow to call existing formatters from other formatters > \`\`\`html
+<div>Useful</div><div>Advertisement</div><article>Handy <section><div>info</div><div>Advertisement</div></section></article><article>ads galore</article>
+\`\`\`
+
+\`\`\`options
+{
+  "formatters": {
+    "adFreeBlock": "[Function adFreeBlock]"
+  },
+  "selectors": [
+    {
+      "format": "adFreeBlock",
+      "selector": "div"
+    },
+    {
+      "format": "adFreeBlock",
+      "options": {
+        "filterRegExp": {},
+        "leadingLineBreaks": 4
+      },
+      "selector": "article"
+    }
+  ]
+}
+\`\`\` 1`] = `
+"Useful
+
+
+
+Handy
+info"
+`;
+
+exports[`should allow to define basic support for block-level tags > \`\`\`html
+<widget><gadget>a</gadget><fidget>b</fidget></widget>c<budget>d</budget>e
+\`\`\`
+
+\`\`\`options
+{
+  "selectors": [
+    {
+      "format": "block",
+      "selector": "budget"
+    },
+    {
+      "format": "block",
+      "selector": "fidget"
+    },
+    {
+      "format": "block",
+      "selector": "gadget"
+    },
+    {
+      "format": "block",
+      "selector": "widget"
+    }
+  ]
+}
+\`\`\` 1`] = `
+"a
+
+b
+
+c
+
+d
+
+e"
+`;
+
+exports[`should allow to define basic support for inline tags > \`\`\`html
+<p>a <span>b </span>c<span>  d  </span>e</p>
+\`\`\`
+
+\`\`\`options
+{
+  "selectors": [
+    {
+      "format": "inline",
+      "selector": "span"
+    }
+  ]
+}
+\`\`\` 1`] = `"a b c d e"`;
+
+exports[`should allow to override formatting of existing tags > \`\`\`html
+<h1>TeSt</h1><h1>mOrE tEsT</h1>
+\`\`\`
+
+\`\`\`options
+{
+  "formatters": {
+    "heading": "[Function heading]"
+  }
+}
+\`\`\` 1`] = `
+"====
+test
+====
+
+=========
+more test
+========="
+`;
+
+exports[`should allow to skip tags with dummy formatting function > \`\`\`html
+<ruby>漢<rt>かん</rt>字<rt>じ</rt></ruby>
+\`\`\`
+
+\`\`\`options
+{
+  "selectors": [
+    {
+      "format": "skip",
+      "selector": "rt"
+    }
+  ]
+}
+\`\`\` 1`] = `"漢字"`;

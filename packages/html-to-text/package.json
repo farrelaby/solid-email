@@ -1,0 +1,47 @@
+{
+  "name": "@solid-email/html-to-text",
+  "version": "0.1.1",
+  "description": "HTML to plain text converter used by Solid Email rendering",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist/**",
+    "src/**"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Akin01/solid-email",
+    "directory": "packages/html-to-text"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@selderee/plugin-htmlparser2": "~0.12.0",
+    "deepmerge-ts": "^7.1.5",
+    "dom-serializer": "^2.0.0",
+    "htmlparser2": "^10.1.0",
+    "selderee": "~0.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "tsconfig": "workspace:*",
+    "tsdown": "catalog:",
+    "vitest": "catalog:"
+  }
+}

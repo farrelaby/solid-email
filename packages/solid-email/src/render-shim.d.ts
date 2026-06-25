@@ -1,5 +1,8 @@
 declare module '@solid-email/render' {
-  import type { HtmlToTextOptions, SelectorDefinition } from 'html-to-text';
+  import type {
+    HtmlToTextOptions,
+    SelectorDefinition,
+  } from '@solid-email/html-to-text';
   import type { Options as PrettierOptions } from 'prettier';
   import type { JSX } from 'solid-js';
 
@@ -17,6 +20,23 @@ declare module '@solid-email/render' {
     | { plainText?: false }
     | { plainText?: true; htmlToTextOptions?: HtmlToTextOptions }
   );
+
+  export type CompileOptions = {
+    withPlainText?: boolean;
+    htmlToTextOptions?: HtmlToTextOptions;
+  };
+
+  export type CompileSyncOptions = CompileOptions;
+
+  export type CompiledRenderOptions = {
+    pretty?: boolean;
+    plainText?: boolean;
+  };
+
+  export type CompiledRenderSyncOptions = {
+    pretty?: false;
+    plainText?: boolean;
+  };
   export const plainTextSelectors: SelectorDefinition[];
   export function toPlainText(
     html: string,
@@ -54,15 +74,15 @@ declare module '@solid-email/render' {
   }
   export function defineSlots<T extends SlotRecord>(): SlotDefinition<T>;
   export class CompiledTemplate<TSlots extends SlotRecord = SlotRecord> {
-    render(data: TSlots, options?: Options): Promise<string>;
-    renderSync(data: TSlots, options?: RenderSyncOptions): string;
+    render(data: TSlots, options?: CompiledRenderOptions): Promise<string>;
+    renderSync(data: TSlots, options?: CompiledRenderSyncOptions): string;
   }
   export function compile<TSlots extends SlotRecord = SlotRecord>(
     node: Renderable,
-    options?: Options,
+    options?: CompileOptions,
   ): Promise<CompiledTemplate<TSlots>>;
   export function compileSync<TSlots extends SlotRecord = SlotRecord>(
     node: Renderable,
-    options?: RenderSyncOptions,
+    options?: CompileSyncOptions,
   ): CompiledTemplate<TSlots>;
 }
