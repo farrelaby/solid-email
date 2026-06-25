@@ -9,6 +9,7 @@
   "type": "module",
   "types": "./dist/index.d.mts",
   "files": [
+    "README.md",
     "dist/**"
   ],
   "exports": {
