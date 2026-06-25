@@ -44,6 +44,18 @@ Measured with `pnpm benchmark:rendering` on the repository marketing email fixtu
 
 **Cached** means the template is compiled once and only the render step is measured. This is the expected production usage — compile at module load, render per request. The "one-time" compile+render cost is comparable to calling `render()` directly.
 
+Plain-text benchmarks measured with `pnpm benchmark:html-to-text` on the repository HTML-to-text fixtures. Lower mean time is better.
+
+| Operation | Fixture | Mean | Throughput | Comparison |
+| --- | --- | ---: | ---: | --- |
+| `@solid-email/render` `toPlainText` | HTML fixtures | 2.4369ms | 410.36 hz | 3.40x faster than React Email `toPlainText` |
+| `@solid-email/render` compiled text template | Solid JSX | 1.4434ms | 692.83 hz | 8.61x faster than React Email plain-text render |
+| `@solid-email/render` uncompiled `renderSync` plain text | Solid JSX | 2.8895ms | 346.09 hz | 4.30x faster than React Email plain-text render |
+| `@solid-email/html-to-text` `convert` | HTML fixtures | 3.9657ms | 252.16 hz | Direct package converter |
+| `html-to-text` `convert` | HTML fixtures | 3.8166ms | 262.01 hz | Direct converter baseline |
+| React Email `toPlainText` | HTML fixtures | 8.2867ms | 120.67 hz | React text conversion baseline |
+| React Email `render` plain text | React JSX | 12.4310ms | 80.44 hz | React plain-text render baseline |
+
 Bundle size compares built ESM entry files after `pnpm build`; gzip uses Node's `zlib.gzipSync`.
 
 | Package entry | Raw size | Gzip size | Comparison |
@@ -128,6 +140,55 @@ const html2 = await compiled.render({ name: 'Bob', url: 'https://other.com' });
 ```
 
 Use `compileSync()` for the synchronous equivalent (rejects `pretty` output).
+
+### Compile plain-text output
+
+For repeated plain-text bodies, compile the template with `withPlainText: true`. The compiled template keeps a reusable text representation, so each render only substitutes slot values.
+
+```tsx
+import { Body, Button, Container, Html, Text } from '@akin01/solid-email';
+import { compile, Slot, slot } from '@solid-email/render';
+
+const compiled = await compile(
+  <Html>
+    <Body>
+      <Container>
+        <Text>
+          Hello <Slot name="name" />!
+        </Text>
+        <Button href={slot('url')}>Open dashboard</Button>
+      </Container>
+    </Body>
+  </Html>,
+  { withPlainText: true },
+);
+
+const text = await compiled.render(
+  { name: 'Alice', url: 'https://example.com/dashboard' },
+  { plainText: true },
+);
+```
+
+For one-off Solid JSX to plain-text output, render the template with `plainText: true`.
+
+```tsx
+import { Body, Button, Container, Html, Text } from '@akin01/solid-email';
+import { render } from '@solid-email/render';
+
+const text = await render(
+  () => (
+    <Html>
+      <Body>
+        <Container>
+          <Text>Hello Alice</Text>
+          <Button href="https://example.com/dashboard">Open dashboard</Button>
+        </Container>
+      </Body>
+    </Html>
+  ),
+  { plainText: true },
+);
+```
 
 ### Slots
 

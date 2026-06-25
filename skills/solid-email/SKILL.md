@@ -3,8 +3,8 @@ name: solid-email
 description: Use when building, reviewing, testing, or documenting HTML email templates with Solid Email. Covers SolidJS email components, server rendering to HTML or plain text, compile-based template caching with slots, Tailwind inlining, markdown, code highlighting, Vite/TanStack integration, and email-client-safe styling.
 license: MIT
 metadata:
-  author: Solid Email contributors
-  version: "0.1.0"
+  author: Ainul Yaqin
+  version: "0.1.3"
   homepage: https://github.com/akin01/solid-email
   source: https://github.com/akin01/solid-email
 ---
@@ -178,6 +178,33 @@ Tailwind classes must be on static parent elements, not on Slot components. Slot
 const text = await render(() => <WelcomeEmail name="Ainul" actionUrl="https://example.com/start" />, {
   plainText: true,
 });
+```
+
+For repeated plain-text output, compile with `withPlainText: true` and render with `plainText: true`.
+
+```tsx
+import { compile, Slot, slot } from '@solid-email/render';
+
+const compiled = await compile(
+  <p>
+    Hello <Slot name="name" />! <a href={slot('actionUrl')}>Start</a>
+  </p>,
+  { withPlainText: true },
+);
+
+const text = await compiled.render(
+  { name: 'Alice', actionUrl: 'https://example.com/start' },
+  { plainText: true },
+);
+```
+
+For batch raw HTML conversion, compile `@solid-email/html-to-text` options once and reuse the returned converter.
+
+```ts
+import { compile } from '@solid-email/html-to-text';
+
+const toText = compile({ wordwrap: false });
+const text = toText('<p>Hello <strong>Alice</strong></p>');
 ```
 
 ## Component rules

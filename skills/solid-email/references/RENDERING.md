@@ -76,6 +76,38 @@ const html2 = await compiled.render({ name: 'Bob', actionUrl: 'https://other.com
 
 Use `compileSync()` for the synchronous equivalent. It rejects `pretty` output.
 
+Compile plain-text output for repeated sends by passing `withPlainText: true`, then request text during render.
+
+```tsx
+import { compile, Slot, slot } from '@solid-email/render';
+
+const compiled = await compile(
+  <p>
+    Hello <Slot name="name" />!
+    <a href={slot('actionUrl')}>Start</a>
+  </p>,
+  { withPlainText: true },
+);
+
+const text = await compiled.render(
+  { name: 'Alice', actionUrl: 'https://example.com/start' },
+  { plainText: true },
+);
+```
+
+For raw HTML-to-text batch conversion, compile converter options once with `@solid-email/html-to-text`.
+
+```ts
+import { compile } from '@solid-email/html-to-text';
+
+const toText = compile({
+  wordwrap: false,
+  selectors: [{ selector: 'img', format: 'skip' }],
+});
+
+const text = toText('<p>Hello <strong>Alice</strong></p>');
+```
+
 Slots mark dynamic parts of a compiled template:
 
 ```tsx

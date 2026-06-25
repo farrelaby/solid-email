@@ -17,6 +17,8 @@
     "./package.json": "./package.json"
   },
   "files": [
+    "LICENSE",
+    "README.md",
     "dist/**",
     "src/**"
   ],
