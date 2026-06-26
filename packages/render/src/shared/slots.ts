@@ -1,5 +1,5 @@
 import type { JSX } from 'solid-js';
-import { ssr } from 'solid-js/web';
+import { ssr } from 'solid-js/web/dist/server.js';
 
 const MARKER_PREFIX = '__SM_';
 const CONTENT_START = `${MARKER_PREFIX}CNT_`;

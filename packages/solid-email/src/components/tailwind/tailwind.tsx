@@ -1,6 +1,6 @@
 import { type CssNode, generate, List, type StyleSheet } from 'css-tree';
 import { createResource, type JSX, Suspense } from 'solid-js';
-import { ssr } from 'solid-js/web';
+import { ssr } from 'solid-js/web/dist/server.js';
 import type { Config } from 'tailwindcss';
 import type { SolidStyle } from '../shared';
 import { sanitizeStyleSheet } from './sanitize-stylesheet';

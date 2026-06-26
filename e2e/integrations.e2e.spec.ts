@@ -140,6 +140,38 @@ const renderRequireProbe = `${renderExportSmoke}
   process.exit(1);
 });`;
 
+const solidEmailBrowserImportProbe = `
+const resolved = import.meta.resolve('@akin01/solid-email');
+const mod = await import('@akin01/solid-email');
+
+for (const name of ['render', 'Section', 'Row', 'Heading']) {
+  if (typeof mod[name] !== 'function') {
+    throw new Error(\`missing solid-email export: \${name}\`);
+  }
+}
+
+const html = await mod.render(() =>
+  mod.Section({
+    style: { padding: '12px' },
+    children: mod.Row({
+      children: mod.Heading({
+        as: 'h2',
+        style: { color: 'blue' },
+        children: 'Solid Email browser condition smoke',
+      }),
+    }),
+  }),
+);
+
+if (!html.includes('<h2') || !html.includes('Solid Email browser condition smoke')) {
+  throw new Error(\`missing rendered heading: \${html}\`);
+}
+if (!html.includes('style="width:100%"') || !html.includes('color:blue')) {
+  throw new Error(\`missing server-rendered style output: \${html}\`);
+}
+
+process.stdout.write(resolved.replaceAll('\\\\', '/') + '\\n', () => process.exit(0));`;
+
 type PnpmError = ExecFileException & {
   stderr?: string;
   stdout?: string;
@@ -318,6 +350,22 @@ describe('published package integration fixtures', () => {
     }
   });
 
+  it('loads solid-email under browser import conditions', async () => {
+    const { stdout } = await execFileAsync(
+      'node',
+      [
+        '--conditions=browser',
+        '--input-type=module',
+        '--eval',
+        solidEmailBrowserImportProbe,
+      ],
+      { cwd: root },
+    );
+
+    expect(stdout.trim().replaceAll('\\', '/')).toContain(
+      '/packages/solid-email/dist/index.mjs',
+    );
+  });
   it('builds and renders in a Solid Vite SSR fixture', async () => {
     const fixtureRoot = await installAndBuildFixture('vite');
     const html = await execFileAsync('node', ['dist/entry-server.mjs'], {
