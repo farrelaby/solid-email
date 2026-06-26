@@ -29,6 +29,7 @@
     "@biomejs/biome": "catalog:",
     "@solid-email/render": "workspace:*",
     "@types/node": "catalog:",
+    "jsdom": "catalog:",
     "solid-js": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",

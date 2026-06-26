@@ -110,6 +110,16 @@ import { WelcomeEmail } from './welcome-email';
 const html = renderSync(() => <WelcomeEmail />);
 ```
 
+## Entrypoints
+
+`@akin01/solid-email` is the SSR/email-rendering entrypoint. It keeps `render`,
+`compile`, and all email components available even under browser-like import
+conditions, so browser code can still produce email HTML strings.
+
+`@akin01/solid-email/client` is the opt-in DOM/CSR preview entrypoint. It exports
+DOM-safe preview components and intentionally excludes `render`, `compile`, and
+`Tailwind`.
+
 ## Compile for repeated renders
 
 When you render the same template multiple times with different data, `compile()` pre-evaluates the Solid components once and reuses the cached HTML on each render.
