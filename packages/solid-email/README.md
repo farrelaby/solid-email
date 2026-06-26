@@ -30,6 +30,15 @@ function WelcomeEmail() {
 const html = await render(() => <WelcomeEmail />);
 ```
 
+## Entrypoints
+
+Use `@akin01/solid-email` for SSR/email HTML string rendering. It exports
+`render`, `compile`, and the full email component set, including `Tailwind`.
+
+Use `@akin01/solid-email/client` only for DOM/CSR preview mounting. It exports
+DOM-safe preview components and intentionally excludes `render`, `compile`, and
+`Tailwind`.
+
 ## Components
 
 Includes email-safe primitives such as `Html`, `Head`, `Preview`, `Body`, `Container`, `Section`, `Row`, `Column`, `Text`, `Heading`, `Button`, `Link`, `Img`, `Hr`, `Markdown`, `CodeInline`, `CodeBlock`, and `Tailwind`.

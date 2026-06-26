@@ -172,6 +172,57 @@ if (!html.includes('style="width:100%"') || !html.includes('color:blue')) {
 
 process.stdout.write(resolved.replaceAll('\\\\', '/') + '\\n', () => process.exit(0));`;
 
+const solidEmailClientDomProbe = `
+const resolved = import.meta.resolve('@akin01/solid-email/client');
+const { JSDOM } = await import('jsdom');
+const dom = new JSDOM('<!DOCTYPE html><main id="root"></main>', {
+  url: 'https://solid.email/preview',
+});
+globalThis.window = dom.window;
+globalThis.document = dom.window.document;
+globalThis.Node = dom.window.Node;
+globalThis.HTMLElement = dom.window.HTMLElement;
+globalThis.Element = dom.window.Element;
+
+const mod = await import('@akin01/solid-email/client');
+
+for (const name of ['render', 'compile', 'Tailwind']) {
+  if (name in mod) {
+    throw new Error(\`unexpected client export: \${name}\`);
+  }
+}
+for (const name of ['Container', 'Heading', 'Text', 'Preview']) {
+  if (typeof mod[name] !== 'function') {
+    throw new Error(\`missing client export: \${name}\`);
+  }
+}
+
+const { render: mount } = await import('solid-js/web');
+const root = document.getElementById('root');
+const dispose = mount(
+  () =>
+    mod.Container({
+      style: { padding: '12px' },
+      children: mod.Heading({
+        as: 'h2',
+        style: { color: 'purple' },
+        children: mod.Text({ children: 'Client preview mounted' }),
+      }),
+    }),
+  root,
+);
+
+const heading = root.querySelector('h2');
+if (!heading || heading.textContent !== 'Client preview mounted') {
+  throw new Error(\`missing mounted client heading: \${root.innerHTML}\`);
+}
+if (!root.querySelector('table')) {
+  throw new Error(\`missing mounted email layout table: \${root.innerHTML}\`);
+}
+
+dispose();
+process.stdout.write(resolved.replaceAll('\\\\', '/') + '\\n', () => process.exit(0));`;
+
 type PnpmError = ExecFileException & {
   stderr?: string;
   stdout?: string;
@@ -364,6 +415,23 @@ describe('published package integration fixtures', () => {
 
     expect(stdout.trim().replaceAll('\\', '/')).toContain(
       '/packages/solid-email/dist/index.mjs',
+    );
+  });
+
+  it('mounts the client entrypoint in a Solid DOM preview', async () => {
+    const { stdout } = await execFileAsync(
+      'node',
+      [
+        '--conditions=browser',
+        '--input-type=module',
+        '--eval',
+        solidEmailClientDomProbe,
+      ],
+      { cwd: root },
+    );
+
+    expect(stdout.trim().replaceAll('\\', '/')).toContain(
+      '/packages/solid-email/dist/client/index.mjs',
     );
   });
   it('builds and renders in a Solid Vite SSR fixture', async () => {
