@@ -1,5 +1,5 @@
 import { splitProps } from 'solid-js';
-import { Dynamic } from 'solid-js/web';
+import { Dynamic } from 'solid-js/web/dist/server.js';
 import {
   cls,
   type IntrinsicProps,

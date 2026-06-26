@@ -7,5 +7,13 @@ export default defineConfig({
   deps: { neverBundle: ['solid-js', 'solid-js/web', '@solid-email/render'] },
   format: ['cjs', 'esm'],
   outDir: './dist',
-  plugins: [solid({ solid: { generate: 'ssr', hydratable: false } })],
+  plugins: [
+    solid({
+      solid: {
+        generate: 'ssr',
+        hydratable: false,
+        moduleName: 'solid-js/web/dist/server.js',
+      },
+    }),
+  ],
 });
